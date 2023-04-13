@@ -1,9 +1,13 @@
-/* Использование типов */
+/* Типы в функциях
 
-let revenue: number = 1000;
-let bonus: number = 500;
-let c: string = 'sdf';
-let b: boolean = true;
+any - любой тип
 
-let res: number = revenue + bonus;
-console.log(res);
+*/
+
+function getFullName(firstname: string, surname: string): string {
+  return `${firstname} ${surname}`;
+}
+
+const getFullNameErrow = (firstname: string, surname: string): string => {
+  return `${firstname} ${surname}`;
+}
