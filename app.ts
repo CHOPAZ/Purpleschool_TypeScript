@@ -1,20 +1,23 @@
-/* Объекты
+/* Упражнение - Типизируем объект */
 
-*/
-
-function getFullName(userEntity: {firstname: string, surname: string}): string {
-  return `${userEntity.firstname} ${userEntity.surname}`;
-}
-
-const user = {
-  firstname: 'Pavel',
-  surname: 'Kvasnickiy',
-  city: 'Surgut',
-  age: 25,
-  skills: {
-    dev: true,
-    devops: true
+let info: {
+  officeId: number;
+  isOpened: boolean;
+  contacts: {
+    phone: string;
+    email: string;
+    address: {
+      city: string;
+    }
   }
+} = {
+	"officeId": 45,
+	"isOpened": false,
+	"contacts": {
+		"phone": "+79100000000",
+		"email": "my@email.ru",
+		"address": {
+			"city": "Москва"
+		}
+	}
 }
-
-console.log(getFullName(user));

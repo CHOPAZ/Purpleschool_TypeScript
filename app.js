@@ -1,18 +1,13 @@
 "use strict";
-/* Объекты
-
-*/
-function getFullName(userEntity) {
-    return `${userEntity.firstname} ${userEntity.surname}`;
-}
-const user = {
-    firstname: 'Pavel',
-    surname: 'Kvasnickiy',
-    city: 'Surgut',
-    age: 25,
-    skills: {
-        dev: true,
-        devops: true
+/* Упражнение - Типизируем объект */
+let info = {
+    "officeId": 45,
+    "isOpened": false,
+    "contacts": {
+        "phone": "+79100000000",
+        "email": "my@email.ru",
+        "address": {
+            "city": "Москва"
+        }
     }
 };
-console.log(getFullName(user));
