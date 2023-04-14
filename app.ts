@@ -1,20 +1,21 @@
-/* Массивы */
-
-const skills: string[] = ['Dev', 'Devops']
-
-for(const skill of skills) {
-  console.log(skill);
-  console.log(skill.toLowerCase());
-
-}
-
-skills.filter(skill => skill !== 'Dev')
-
-/* Если например массив skills2 не типизирован ( пришел извне), то можно внутри типизировать метода
-Но мы не можем указать явный тип number, потому что итерация происходит по строкам
+/* Tuples - кортежы
+  Массив ограниченной длины, где каждый элемент типизирован
 */
-const skills2 = ['Dev', 'Devops']
-skills2.filter((skill: string) => skill !== 'Dev')
 
-/* Неоднородный массив - плохой вариант. Any не использовать */
-const skills23: any[] = ['Dev', 'Devops', 1]
+
+/* Массив содержащий ТОЛЬКО идентификатор и название (1, 'Dev') */
+const skill: [number, string] = [1, 'Dev'];
+const id = skill[0];
+const skillName = skill[1];
+
+/* Но т.к. это массив, то с ним можно делать какие то операции, и ts это никак не запретит. Но обратится к нему мы все равно не сможем */
+skill.push('Testing')
+// const test = skills[2] // ошибка
+
+
+/* Диструктуризация */
+const skill2: [number, string] = [1, 'Dev'];
+const [id2, skillName2] = skill2
+
+/* Типизация массива произвольной длины - редко */
+const arr: [number, string, ...boolean[]] = [1, 'Dev', true, false];
