@@ -1,12 +1,18 @@
 "use strict";
-/* Типы в функциях
-
-any - любой тип
+/* Объекты
 
 */
-function getFullName(firstname, surname) {
-    return `${firstname} ${surname}`;
+function getFullName(userEntity) {
+    return `${userEntity.firstname} ${userEntity.surname}`;
 }
-const getFullNameErrow = (firstname, surname) => {
-    return `${firstname} ${surname}`;
+const user = {
+    firstname: 'Pavel',
+    surname: 'Kvasnickiy',
+    city: 'Surgut',
+    age: 25,
+    skills: {
+        dev: true,
+        devops: true
+    }
 };
+console.log(getFullName(user));
