@@ -1,23 +1,20 @@
-/* Упражнение - Типизируем объект */
+/* Массивы */
 
-let info: {
-  officeId: number;
-  isOpened: boolean;
-  contacts: {
-    phone: string;
-    email: string;
-    address: {
-      city: string;
-    }
-  }
-} = {
-	"officeId": 45,
-	"isOpened": false,
-	"contacts": {
-		"phone": "+79100000000",
-		"email": "my@email.ru",
-		"address": {
-			"city": "Москва"
-		}
-	}
+const skills: string[] = ['Dev', 'Devops']
+
+for(const skill of skills) {
+  console.log(skill);
+  console.log(skill.toLowerCase());
+
 }
+
+skills.filter(skill => skill !== 'Dev')
+
+/* Если например массив skills2 не типизирован ( пришел извне), то можно внутри типизировать метода
+Но мы не можем указать явный тип number, потому что итерация происходит по строкам
+*/
+const skills2 = ['Dev', 'Devops']
+skills2.filter((skill: string) => skill !== 'Dev')
+
+/* Неоднородный массив - плохой вариант. Any не использовать */
+const skills23: any[] = ['Dev', 'Devops', 1]
