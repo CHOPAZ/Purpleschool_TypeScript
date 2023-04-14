@@ -1,21 +1,19 @@
-/* Tuples - кортежы
-  Массив ограниченной длины, где каждый элемент типизирован
+/* Readonly
 */
 
 
-/* Массив содержащий ТОЛЬКО идентификатор и название (1, 'Dev') */
+/* Проблема: несмотря на то что skill константа, мы можем переопределить его элементы */
 const skill: [number, string] = [1, 'Dev'];
-const id = skill[0];
-const skillName = skill[1];
 
-/* Но т.к. это массив, то с ним можно делать какие то операции, и ts это никак не запретит. Но обратится к нему мы все равно не сможем */
-skill.push('Testing')
-// const test = skills[2] // ошибка
+/* Readonly - кортеж, который нельзя изменить */
+const skill2: readonly[number, string] = [1, 'Dev'];
 
+const skill3: readonly string[] = ['Dev, DevOps'];
 
-/* Диструктуризация */
-const skill2: [number, string] = [1, 'Dev'];
-const [id2, skillName2] = skill2
+/* Альтернативная запись для массивов - Джинерик.
+вместо string[] - Array<string>
+*/
+const skill4: Array<string> = ['Dev, DevOps'];
 
-/* Типизация массива произвольной длины - редко */
-const arr: [number, string, ...boolean[]] = [1, 'Dev', true, false];
+/* Альтернативная запись для Readonly - Дженерик */
+const skill5: ReadonlyArray<string> = ['Dev, DevOps'];
