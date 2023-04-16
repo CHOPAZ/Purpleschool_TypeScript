@@ -1,92 +1,106 @@
-/* Type Aliases - упрощение, которое позволяет записывать типы более эффективно
+/* Interfaces - альтернативная записть объекта
 */
 
-type httpMethod = 'post' | 'get';
-type coolString = string;
-
-function fetchWithAuth(url: string, method: httpMethod): 1 | -1 {
-  return -1
+interface User {
+  name: string,
+  age:number,
+  skills: string[]
 }
 
+let user: User = {
+  name: 'asd',
+  age: 25,
+  skills: ['1', '2']
+}
 
 /*  */
-let user: {
-  name: string,
-  age:number,
-  skills: string[]
-} = {
-  name: 'asd',
-  age: 25,
-  skills: [
-    '1',
-    '2'
-  ]
-}
 
-/* Вынесем в type aliase */
-
-type User2 = {
+interface User2 {
   name: string,
   age:number,
   skills: string[]
 }
 
-let user2: User2 = {
-  name: 'asd',
-  age: 25,
-  skills: [
-    '1',
-    '2'
-  ]
+interface UserWithRole extends User2 {
+  roleId: number
 }
 
-/* intersection type. Удобно использовать когда есть несколько типов объектов, и их объеденить в один большой */
-
-type Role = {
-  id: number
-}
-
-type User3 = {
-  name: string,
-  age:number,
-  skills: string[]
-}
-
-type UserWithRole = User3 & Role //intersection
-
-let user3: UserWithRole = {
+let user2: UserWithRole = {
   name: 'asd',
   age: 25,
   skills: ['1', '2'],
-  id: 1
+  roleId: 1
 }
 
-/* Если есть пересечения типво */
-type Role2 = {
-  id: number,
-  name: string,
-}
-
-type User4 = {
+/*  */
+interface User3 {
   name: string,
   age:number,
   skills: string[]
 }
 
-type UserWithRole2 = {
-  user: User4,
-  role: Role2
-
+interface Role3 {
+  roleId: number
 }
 
-let User4: UserWithRole2 = {
-  user: {
-    name: 'asd',
-    age: 25,
-    skills: ['1', '2'],
-  },
-  role: {
-    id: 1,
-    name: 'dev'
+interface UserWithRole3 extends User3, Role3 {
+  createdAt: Date
+}
+
+let user3: UserWithRole3 = {
+  name: 'asd',
+  age: 25,
+  skills: ['1', '2'],
+  roleId: 1,
+  createdAt: new Date()
+}
+
+/* Объекты могут содержать функции */
+interface User4 {
+  name: string,
+  age:number,
+  skills: string[],
+  log: (id: number) => string
+}
+
+interface Role4 {
+  roleId: number
+}
+
+interface UserWithRole4 extends User4, Role4 {
+  createdAt: Date
+}
+
+let user4: UserWithRole4 = {
+  name: 'asd',
+  age: 25,
+  skills: ['1', '2'],
+  roleId: 1,
+  createdAt: new Date(),
+  log(id) {
+    return ''
   }
 }
+
+
+/* Индексные свойства
+
+Например:
+
+{
+  1: user,
+  2: user2
+}
+*/
+/* У интерфейся может быть неограниченное число свойства, где ключом является число, а значвением является пользователь */
+interface UserDic {
+  [index: number]: User
+}
+
+type UserDic2 ={
+  [index: number]: User
+}
+
+/* Record */
+
+type ud = Record<number, User>

@@ -1,40 +1,31 @@
 "use strict";
-/* Type Aliases - упрощение, которое позволяет записывать типы более эффективно
+/* Interfaces - альтернативная записть объекта
 */
-function fetchWithAuth(url, method) {
-    return -1;
-}
-/*  */
 let user = {
     name: 'asd',
     age: 25,
-    skills: [
-        '1',
-        '2'
-    ]
+    skills: ['1', '2']
 };
 let user2 = {
     name: 'asd',
     age: 25,
-    skills: [
-        '1',
-        '2'
-    ]
+    skills: ['1', '2'],
+    roleId: 1
 };
 let user3 = {
     name: 'asd',
     age: 25,
     skills: ['1', '2'],
-    id: 1
+    roleId: 1,
+    createdAt: new Date()
 };
-let User4 = {
-    user: {
-        name: 'asd',
-        age: 25,
-        skills: ['1', '2'],
-    },
-    role: {
-        id: 1,
-        name: 'dev'
+let user4 = {
+    name: 'asd',
+    age: 25,
+    skills: ['1', '2'],
+    roleId: 1,
+    createdAt: new Date(),
+    log(id) {
+        return '';
     }
 };
