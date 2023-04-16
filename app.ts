@@ -1,25 +1,92 @@
-/* Literal types
+/* Type Aliases - упрощение, которое позволяет записывать типы более эффективно
 */
 
+type httpMethod = 'post' | 'get';
+type coolString = string;
 
-function fetchWithAuth(url: string, method: 'post' | 'get'): 1 | -1 {
+function fetchWithAuth(url: string, method: httpMethod): 1 | -1 {
   return -1
 }
 
-fetchWithAuth('s', 'post'); //корректно
-// fetchWithAuth('s', 'asd'); // некоректно
 
-/* String literal активно используются как на фронте так и на бэк, например для задания пропса */
+/*  */
+let user: {
+  name: string,
+  age:number,
+  skills: string[]
+} = {
+  name: 'asd',
+  age: 25,
+  skills: [
+    '1',
+    '2'
+  ]
+}
 
-const a = 'asd'; // тип не string, a 'asd;
-let b = 'asd'; // тип string
-let c: 'asd' = 'asd'; //тип 'asd
-let d = 1; //тип number
-const e = 1; //тип 1 
+/* Вынесем в type aliase */
 
-let method = 'post'; //метод string
-// fetchWithAuth('s', method); //будет ошибка, т.к идет проверка ттипов и method тип string
+type User2 = {
+  name: string,
+  age:number,
+  skills: string[]
+}
 
-/* Чо бы это исправить можно кастонуть к определенному типу */
-fetchWithAuth('s', method as 'post')
-/* но если в переменной method будет что то другое то типизацция не сломается  */
+let user2: User2 = {
+  name: 'asd',
+  age: 25,
+  skills: [
+    '1',
+    '2'
+  ]
+}
+
+/* intersection type. Удобно использовать когда есть несколько типов объектов, и их объеденить в один большой */
+
+type Role = {
+  id: number
+}
+
+type User3 = {
+  name: string,
+  age:number,
+  skills: string[]
+}
+
+type UserWithRole = User3 & Role //intersection
+
+let user3: UserWithRole = {
+  name: 'asd',
+  age: 25,
+  skills: ['1', '2'],
+  id: 1
+}
+
+/* Если есть пересечения типво */
+type Role2 = {
+  id: number,
+  name: string,
+}
+
+type User4 = {
+  name: string,
+  age:number,
+  skills: string[]
+}
+
+type UserWithRole2 = {
+  user: User4,
+  role: Role2
+
+}
+
+let User4: UserWithRole2 = {
+  user: {
+    name: 'asd',
+    age: 25,
+    skills: ['1', '2'],
+  },
+  role: {
+    id: 1,
+    name: 'dev'
+  }
+}

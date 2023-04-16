@@ -1,19 +1,40 @@
 "use strict";
-/* Literal types
+/* Type Aliases - упрощение, которое позволяет записывать типы более эффективно
 */
 function fetchWithAuth(url, method) {
     return -1;
 }
-fetchWithAuth('s', 'post'); //корректно
-// fetchWithAuth('s', 'asd'); // некоректно
-/* String literal активно используются как на фронте так и на бэк, например для задания пропса */
-const a = 'asd'; // тип не string, a 'asd;
-let b = 'asd'; // тип string
-let c = 'asd'; //тип 'asd
-let d = 1; //тип number
-const e = 1; //тип 1 
-let method = 'post'; //метод string
-// fetchWithAuth('s', method); //будет ошибка, т.к идет проверка ттипов и method тип string
-/* Чо бы это исправить можно кастонуть к определенному типу */
-fetchWithAuth('s', method);
-/* но если в переменной method будет что то другое то типизацция не сломается  */ 
+/*  */
+let user = {
+    name: 'asd',
+    age: 25,
+    skills: [
+        '1',
+        '2'
+    ]
+};
+let user2 = {
+    name: 'asd',
+    age: 25,
+    skills: [
+        '1',
+        '2'
+    ]
+};
+let user3 = {
+    name: 'asd',
+    age: 25,
+    skills: ['1', '2'],
+    id: 1
+};
+let User4 = {
+    user: {
+        name: 'asd',
+        age: 25,
+        skills: ['1', '2'],
+    },
+    role: {
+        id: 1,
+        name: 'dev'
+    }
+};
