@@ -1,31 +1,11 @@
 "use strict";
-/* Interfaces - альтернативная записть объекта
-*/
-let user = {
-    name: 'asd',
-    age: 25,
-    skills: ['1', '2']
+/* Types или Interfaces */
+const user = {
+    name: 'Pavel',
+    age: 25
 };
-let user2 = {
-    name: 'asd',
-    age: 25,
-    skills: ['1', '2'],
-    roleId: 1
-};
-let user3 = {
-    name: 'asd',
-    age: 25,
-    skills: ['1', '2'],
-    roleId: 1,
-    createdAt: new Date()
-};
-let user4 = {
-    name: 'asd',
-    age: 25,
-    skills: ['1', '2'],
-    roleId: 1,
-    createdAt: new Date(),
-    log(id) {
-        return '';
-    }
-};
+/* Рекомендации
+1. type использовать для примитивных типов
+2. interface работа с объектами, классами
+
+*/ 

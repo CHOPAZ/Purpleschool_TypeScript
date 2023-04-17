@@ -1,106 +1,34 @@
-/* Interfaces - альтернативная записть объекта
+/* Types или Interfaces */
+
+
+
+/* Преимущества Interface
+1. один интерфейс дополняет другой интерфейс (код ниже)
+
+Минус в этом, если это наш интерфейс, и получится сложность в ревью кода
+Полезно, когда используется какая то библиотека, и необходимо ее доопределить
 */
+interface User {
+  name: string
+}
 
 interface User {
-  name: string,
-  age:number,
-  skills: string[]
+  age: number
 }
 
-let user: User = {
-  name: 'asd',
-  age: 25,
-  skills: ['1', '2']
-}
-
-/*  */
-
-interface User2 {
-  name: string,
-  age:number,
-  skills: string[]
-}
-
-interface UserWithRole extends User2 {
-  roleId: number
-}
-
-let user2: UserWithRole = {
-  name: 'asd',
-  age: 25,
-  skills: ['1', '2'],
-  roleId: 1
-}
-
-/*  */
-interface User3 {
-  name: string,
-  age:number,
-  skills: string[]
-}
-
-interface Role3 {
-  roleId: number
-}
-
-interface UserWithRole3 extends User3, Role3 {
-  createdAt: Date
-}
-
-let user3: UserWithRole3 = {
-  name: 'asd',
-  age: 25,
-  skills: ['1', '2'],
-  roleId: 1,
-  createdAt: new Date()
-}
-
-/* Объекты могут содержать функции */
-interface User4 {
-  name: string,
-  age:number,
-  skills: string[],
-  log: (id: number) => string
-}
-
-interface Role4 {
-  roleId: number
-}
-
-interface UserWithRole4 extends User4, Role4 {
-  createdAt: Date
-}
-
-let user4: UserWithRole4 = {
-  name: 'asd',
-  age: 25,
-  skills: ['1', '2'],
-  roleId: 1,
-  createdAt: new Date(),
-  log(id) {
-    return ''
-  }
+const user: User ={
+  name: 'Pavel',
+  age: 25
 }
 
 
-/* Индексные свойства
+/* Преимущества type */
 
-Например:
+type ID = string | number // union
 
-{
-  1: user,
-  2: user2
-}
+
+/* Рекомендации
+1. type использовать для примитивных типов
+2. interface работа с объектами, классами
+
 */
-/* У интерфейся может быть неограниченное число свойства, где ключом является число, а значвением является пользователь */
-interface UserDic {
-  [index: number]: User
-}
-
-type UserDic2 ={
-  [index: number]: User
-}
-
-/* Record */
-
-type ud = Record<number, User>
