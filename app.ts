@@ -1,43 +1,58 @@
-/* void - обозначает что эта функция ничего не возвращаетcz */
+/* unknown - исключительно в ts - означает что неизвестно что лежит в переменной. переменная может прийти откуда то извне, либо это ошибка какая-то
+  таким образом нужно обозначить что есть какая то переменная, тип которой мы заранее не знаем, но не Any
 
-function logId(id: string | number): void {
-  console.log(id);
-}
-
-const a = logId(1) // тип a - void
-
-
-/* 
-  Если функция из любой ветки хоть что-то вернула будет number | undefined
-  Если функция из любой ветки ничего не возвращает будет void
+  unknown нельзя положить в любую другую переменную, передать функцию в качестве параметра в которой задан тип, пока не сделаем приведение типов или определим что это за тип
 */
-function multiply(f: number, s?: number) { //тип функции которая возвращает number | undefined
-  if(!s) {
-    return f * f
+
+let input: unknown;
+input = 3;
+input = ['sf'];
+
+let res: string = input // ошибка ts, что тип  unknown не может быть назначен для типа string
+let res2: any = input // Работает
+
+/* Как правильно опредеоить что за тип и сделать сужение типов */
+function run(i: unknown) {
+  if(typeof i == 'number') {
+    i++; // number
+  } else {
+    i // unknown
   }
 }
 
-/* Кейсы импользования void */
+run(input)
 
-type voidFunc = () => void;
 
-const f1: voidFunc = () => {}
+/* на практике */
 
-/* Работает, потмоу что возврат будет игнорироваться. Практическое применение, когда хотим сделать например перебор массива */
-const f2: voidFunc = () => {
-  return true
+/* С TS 4.4 ошибка стала unknown, раньше была any */
+
+/* более явное приведение типов */
+async function getData() {
+  try {
+    await fetch('')
+  } catch(error) {
+    if (error instanceof Error) {
+      console.log(error.message);
+    }
+  }
+
 }
-const b = f2(); //void
 
+/* не явная проверка, может ошибка, что где то неправильно прокинули ошибку и пришла строка а не Error */
+async function getDataForce() {
+  try {
+    await fetch('')
+  } catch(error) {
+      const e = error as Error
+      console.log(e.message);
+  }
 
-const skills = ['Dev', 'DevOps'];
-const user = {
-  skills: ['']
 }
 
-skills.forEach((e) => user.skills.push(e))
+/* unknown и union с абсолютно любым типом будет unknown */
 
-/* Благодаря void, мы получаем совместимость использования forEach, который ожидает в результате void и push, в результате который ожидает какое-то число
+type U1 = unknown | null
 
-  Ключевое различие между void и undefined, если функция ничего не возвращает она может быть void или undefined, но когда мы типизируем функцию и хотим игнорировать возврат мы типищзируем как возврат void
-*/
+/* intersaction(&) unknown и любого другого типа будет любой тип  */
+type I1 = unknown & string
