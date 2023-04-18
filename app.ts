@@ -1,49 +1,44 @@
-/* Optional */
+/* Упражнение - типизируем ответ сервера */
 
 
-/* Если какой то параметр является необязательный то исп. ? */
-interface User {
-  login: string;
-  password?: string;
-  // password: string | undefined - не эквивалентно ?
+/* Первый вариант нативный */
+/* Интерфейс платежа */
+interface Payment {
+  sum: number;
+  from: number;
+  to: number;
 }
 
-type User2 = {
-  login: string;
-  password?: string;
+/* Запрос */
+interface PaymentRequest extends Payment{}
+
+/* Ответ */
+enum PaymentStatus {
+  SUCCESS = 'success',
+  FAILED = 'failed'
 }
 
-const user: User = {
-  login: 'asd@asd.ru',
+interface DataSuccess extends Payment {
+  databaseId: number;
 }
 
-
-/* Использование опциональный тип в функциях
-  в функицях number | undefined - эквивалентно ?
-*/
-
-function multiply(first: number, second?: number): number {
-  if (!second) {
-    return first * first
-  }
-  return first * second
+interface DataFailed {
+  errorMessage: string;
+  errorCode: number
 }
 
-/* Использование опциональный тип в объекте */
-interface UserPro {
-  login: string;
-  password?: {
-    type: 'primary' | 'secondary'
-  };
+interface ResponceSuccess {
+  status: PaymentStatus.SUCCESS
+  data: DataSuccess
 }
 
-function testPass(user: UserPro) {
-  const type = user.password?.type
-  const type2 = user.password ? user.password.type : undefined
-  const type3 = user.password!.type // - 100% пароль будет не undefined
+interface ResponceFailed {
+  status: PaymentStatus.FAILED
+  data: DataFailed
 }
 
-function test(param?: string) {
-  const t = param ?? multiply(5)
+function get(): ResponceSuccess | ResponceFailed {
+
 }
+
 
