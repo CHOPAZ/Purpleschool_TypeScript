@@ -1,58 +1,92 @@
-/* unknown - исключительно в ts - означает что неизвестно что лежит в переменной. переменная может прийти откуда то извне, либо это ошибка какая-то
-  таким образом нужно обозначить что есть какая то переменная, тип которой мы заранее не знаем, но не Any
+/* never - никогда такого не произойдет.
 
-  unknown нельзя положить в любую другую переменную, передать функцию в качестве параметра в которой задан тип, пока не сделаем приведение типов или определим что это за тип
+
 */
 
-let input: unknown;
-input = 3;
-input = ['sf'];
+/* Первый кейс */
+function genereateError(message: string): never { // никогда не возвращает и нужно писать never, не воид
+  throw new Error(message)
+}
 
-let res: string = input // ошибка ts, что тип  unknown не может быть назначен для типа string
-let res2: any = input // Работает
+/* Второй кейс */
+function dumpError():never {
+  while(true) {/* .... */} // цикл который никогда не выйдет
+}
 
-/* Как правильно опредеоить что за тип и сделать сужение типов */
-function run(i: unknown) {
-  if(typeof i == 'number') {
-    i++; // number
-  } else {
-    i // unknown
+/* Рекурсия */
+function rec(): never { // без типизация тип функции any
+  return rec();
+}
+
+/* Третий кейс 
+
+Если добавится параметр на пример 'rejected', то в кейсе он не сработается и отработает default (run time ошибка).
+А суть ts - уменьшение ошибок в run time и перевод их на compail time
+
+*/
+
+type paymentAction = 'refund' | 'checkout';
+
+function processAction(action: paymentAction) {
+  switch(action) {
+    case 'refund':
+      //....
+      break;
+    case 'checkout':
+      //....
+      break;
+    default:
+      throw new Error('нет такого action')
   }
 }
 
-run(input)
+/* Исправление при помощи never 
 
+Теперь, когда появится новый параметр 'reject', ts будет ругаться, и нужно будет добавить новый кейс для 'reject'
+*/
 
-/* на практике */
+type paymentAction2 = 'refund' | 'checkout' | 'reject';
 
-/* С TS 4.4 ошибка стала unknown, раньше была any */
-
-/* более явное приведение типов */
-async function getData() {
-  try {
-    await fetch('')
-  } catch(error) {
-    if (error instanceof Error) {
-      console.log(error.message);
-    }
+function processAction2(action: paymentAction2) {
+  switch(action) {
+    case 'refund':
+      //....
+      break;
+    case 'checkout':
+      //....
+      break;
+    default:
+      const _: never = action // const _ - исключает проверку тс на неиспользуемую константьу
+      throw new Error('нет такого action')
   }
-
 }
 
-/* не явная проверка, может ошибка, что где то неправильно прокинули ошибку и пришла строка а не Error */
-async function getDataForce() {
-  try {
-    await fetch('')
-  } catch(error) {
-      const e = error as Error
-      console.log(e.message);
-  }
+/* Исчерпывающая проверка */
 
+/* Будет ошибка, потому что в функции скрыт возврат undefined */
+function isString(x: string | number): boolean {
+  if (typeof x === 'string') {
+    return true
+  } else if(typeof x === 'number') {
+    return false
+  }
 }
 
-/* unknown и union с абсолютно любым типом будет unknown */
+/* Исправление
+Ошибка уйдет, потому что вызвав функцию genereateError2('asdasf') вы больше никуда не пойдем, т.к она выкидывает ошибку
+*/
 
-type U1 = unknown | null
+function genereateError2(message: string): never { // никогда не возвращает и нужно писать never, не воид
+  throw new Error(message)
+}
 
-/* intersaction(&) unknown и любого другого типа будет любой тип  */
-type I1 = unknown & string
+function isString2(x: string | number): boolean {
+  if (typeof x === 'string') {
+    return true
+  } else if(typeof x === 'number') {
+    return false
+  }
+  genereateError2('asdasf')
+}
+
+/* never - помогает, ограничить какие-то ветки, какие-то случаи, когда явно необходимо проходить проверку по типам и необходимо какую-то ветку блокировать нсовсем если мы не хотим туда никогда попасть */

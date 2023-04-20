@@ -1,57 +1,68 @@
 "use strict";
-/* unknown - исключительно в ts - означает что неизвестно что лежит в переменной. переменная может прийти откуда то извне, либо это ошибка какая-то
-  таким образом нужно обозначить что есть какая то переменная, тип которой мы заранее не знаем, но не Any
+/* never - никогда такого не произойдет.
 
-  unknown нельзя положить в любую другую переменную, передать функцию в качестве параметра в которой задан тип, пока не сделаем приведение типов или определим что это за тип
+
 */
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-let input;
-input = 3;
-input = ['sf'];
-let res = input; // ошибка ts, что тип  unknown не может быть назначен для типа string
-let res2 = input; // Работает
-/* Как правильно опредеоить что за тип и сделать сужение типов */
-function run(i) {
-    if (typeof i == 'number') {
-        i++; // number
+/* Первый кейс */
+function genereateError(message) {
+    throw new Error(message);
+}
+/* Второй кейс */
+function dumpError() {
+    while (true) { /* .... */ } // цикл который никогда не выйдет
+}
+/* Рекурсия */
+function rec() {
+    return rec();
+}
+function processAction(action) {
+    switch (action) {
+        case 'refund':
+            //....
+            break;
+        case 'checkout':
+            //....
+            break;
+        default:
+            throw new Error('нет такого action');
     }
-    else {
-        i; // unknown
+}
+function processAction2(action) {
+    switch (action) {
+        case 'refund':
+            //....
+            break;
+        case 'checkout':
+            //....
+            break;
+        default:
+            const _ = action; // const _ - исключает проверку тс на неиспользуемую константьу
+            throw new Error('нет такого action');
     }
 }
-run(input);
-/* на практике */
-/* С TS 4.4 ошибка стала unknown, раньше была any */
-/* более явное приведение типов */
-function getData() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield fetch('');
-        }
-        catch (error) {
-            if (error instanceof Error) {
-                console.log(error.message);
-            }
-        }
-    });
+/* Исчерпывающая проверка */
+/* Будет ошибка, потому что в функции скрыт возврат undefined */
+function isString(x) {
+    if (typeof x === 'string') {
+        return true;
+    }
+    else if (typeof x === 'number') {
+        return false;
+    }
 }
-/* не явная проверка, может ошибка, что где то неправильно прокинули ошибку и пришла строка а не Error */
-function getDataForce() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            yield fetch('');
-        }
-        catch (error) {
-            const e = error;
-            console.log(e.message);
-        }
-    });
+/* Исправление
+Ошибка уйдет, потому что вызвав функцию genereateError2('asdasf') вы больше никуда не пойдем, т.к она выкидывает ошибку
+*/
+function genereateError2(message) {
+    throw new Error(message);
 }
+function isString2(x) {
+    if (typeof x === 'string') {
+        return true;
+    }
+    else if (typeof x === 'number') {
+        return false;
+    }
+    genereateError2('asdasf');
+}
+/* never - помогает, ограничить какие-то ветки, какие-то случаи, когда явно необходимо проходить проверку по типам и необходимо какую-то ветку блокировать нсовсем если мы не хотим туда никогда попасть */ 
