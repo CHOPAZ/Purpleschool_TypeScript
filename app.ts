@@ -1,52 +1,71 @@
-/* null - 
-Особенности его работы в stric режиме
+/* Приведение типов
 */
 
-const nl: null = null;
-const n2: null = unknown // нельзя присвоить
-const n3: null = undefined // нельзя присвоить
+let a = 5;
+let b: string = a; //ошибка потомучто string нельзя присвоить number
+let b1: string = a.toString()// преобразовали в string 
+
+let c = 'asd';
+let d: number = parseInt(c); //преобразовали string в number
+
+let e = new String(a)ж // не string, a String - интерфейс контруктора типов для строки
+let e1: string = new String(a); // ошибка
+let e2: string = new String(a).valueOf(); // теперь строка
+
+let f: boolean = new Boolean(a).valueOf();
 
 
-const num1: number = null; // в js можно положить null в переменную, в ts за это отвечает strictNullCheck
-const num2: string = null;
-const num3: boolean = null;
-const num4: undefined = null;
+/* Объекты */
 
-/* Перейдя в tsconfig - strictNullChecks - false
-  Ошибка уйдет
-*/
-
-/* Какие последствия могут быть
-  Ошибки не будет, и код коговир что getUser вернет всегда имя, но это не так, в 50% случаях вернется undefined
-  strictNullCheck, если его включить, то мы увидем что будет const user4: User | undefined и будет ошибка
-*/
 interface User {
-  name: string
+  name: string;
+  email: string;
+  login: string;
 }
 
-function getUser() {
-  if (Math.random() > 0.5) {
-    return null
-  } else {
-    return {
-      name: 'Vasya'
-    } as User
+const user: User = {
+  name: 'Pavel',
+  email: 'q@q.ru',
+  login: 'pasha'
+}
+
+const user2 = {
+  name: 'Pavel',
+  email: 'q@q.ru',
+  login: 'pasha'
+} as User
+
+/* Преобразование одного объекта к другому */
+
+interface Admin {
+  name: string;
+  role: number;
+}
+
+/* Первый вариант - минус в том что мы сохранили емаил и логин, хотя они ему не нужны
+
+Мы сможем обратиться только к admin.name и admin.role, хотя под капотом js у admin будет и email и login
+
+Не рекомендуется
+*/
+const admin: Admin = {
+  ...user,
+  role: 1
+}
+
+/* Тоже не верно */
+
+interface Admin2 {
+  name: string;
+}
+
+const admin2: Admin2 = user;
+
+/* Верно */
+
+function userToAdmin(user: User): Admin {
+  return {
+    name: user.name,
+    role: 1
   }
 }
-
-const user4 = getUser();
-const name2 = user4.name
-
-
-/* Отличия undefined и null:
-  null - явно заданный неопределенный объект
-  undefined - не заданный объект
-
-  Если осознанно нужно вернуть что этого объекта нет, использовать null
-
-
-*/
-
-if (user4) {
-  const name2 = user4.name
-} 
