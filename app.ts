@@ -1,22 +1,29 @@
-/* Приведение типов
+/* Type Guard - Функция
 */
 
-let a = 5;
-let b: string = a; //ошибка потомучто string нельзя присвоить number
-let b1: string = a.toString()// преобразовали в string 
+function logId(id: string | number) {
+  if (typeof id === 'string') {
+    console.log(id); //string
+  } else if(typeof id === 'number') {
+    console.log(id); //number
+  }
+  id //string | number - Флоу типов
+}
 
-let c = 'asd';
-let d: number = parseInt(c); //преобразовали string в number
+/* как пишутся type guard */
+function logId2(id: string | number) {
+  if (isString(id)) {
+    console.log(id); //string
+  } else {
+    console.log(id); //number
+  }
+}
 
-let e = new String(a)ж // не string, a String - интерфейс контруктора типов для строки
-let e1: string = new String(a); // ошибка
-let e2: string = new String(a).valueOf(); // теперь строка
+function isString(x: string | number ): x is string { // запись показывает что x прошел проверку и будет строкой из двух типов string | number. Функция вернет boolean тип
+  return typeof x === 'string'
+}
 
-let f: boolean = new Boolean(a).valueOf();
-
-
-/* Объекты */
-
+/*  */
 interface User {
   name: string;
   email: string;
@@ -29,43 +36,25 @@ const user: User = {
   login: 'pasha'
 }
 
-const user2 = {
-  name: 'Pavel',
-  email: 'q@q.ru',
-  login: 'pasha'
-} as User
-
-/* Преобразование одного объекта к другому */
-
 interface Admin {
   name: string;
   role: number;
 }
 
-/* Первый вариант - минус в том что мы сохранили емаил и логин, хотя они ему не нужны
-
-Мы сможем обратиться только к admin.name и admin.role, хотя под капотом js у admin будет и email и login
-
-Не рекомендуется
-*/
-const admin: Admin = {
-  ...user,
-  role: 1
+function isAdmin(user: User | Admin): user is Admin {
+  return 'role' in user
 }
 
-/* Тоже не верно */
-
-interface Admin2 {
-  name: string;
+function isAdminAlternative(user: User | Admin): user is Admin {
+  return (user as Admin).role !== undefined;
 }
 
-const admin2: Admin2 = user;
-
-/* Верно */
-
-function userToAdmin(user: User): Admin {
-  return {
-    name: user.name,
-    role: 1
+function setRoleZero(user: User | Admin) {
+  if(isAdmin(user)) {
+    user.role = 0
+  } else {
+    throw new Error('Пользователь не админ')
   }
 }
+
+/* такие проверки не могут быть асинхронными */
