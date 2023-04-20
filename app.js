@@ -1,68 +1,34 @@
 "use strict";
-/* never - никогда такого не произойдет.
+/* null -
+Особенности его работы в stric режиме
+*/
+const nl = null;
+const n2 = unknown; // нельзя присвоить
+const n3 = undefined; // нельзя присвоить
+const num1 = null; // в js можно положить null в переменную, в ts за это отвечает strictNullCheck
+const num2 = null;
+const num3 = null;
+const num4 = null;
+function getUser() {
+    if (Math.random() > 0.5) {
+        return null;
+    }
+    else {
+        return {
+            name: 'Vasya'
+        };
+    }
+}
+const user4 = getUser();
+const name2 = user4.name;
+/* Отличия undefined и null:
+  null - явно заданный неопределенный объект
+  undefined - не заданный объект
+
+  Если осознанно нужно вернуть что этого объекта нет, использовать null
 
 
 */
-/* Первый кейс */
-function genereateError(message) {
-    throw new Error(message);
+if (user4) {
+    const name2 = user4.name;
 }
-/* Второй кейс */
-function dumpError() {
-    while (true) { /* .... */ } // цикл который никогда не выйдет
-}
-/* Рекурсия */
-function rec() {
-    return rec();
-}
-function processAction(action) {
-    switch (action) {
-        case 'refund':
-            //....
-            break;
-        case 'checkout':
-            //....
-            break;
-        default:
-            throw new Error('нет такого action');
-    }
-}
-function processAction2(action) {
-    switch (action) {
-        case 'refund':
-            //....
-            break;
-        case 'checkout':
-            //....
-            break;
-        default:
-            const _ = action; // const _ - исключает проверку тс на неиспользуемую константьу
-            throw new Error('нет такого action');
-    }
-}
-/* Исчерпывающая проверка */
-/* Будет ошибка, потому что в функции скрыт возврат undefined */
-function isString(x) {
-    if (typeof x === 'string') {
-        return true;
-    }
-    else if (typeof x === 'number') {
-        return false;
-    }
-}
-/* Исправление
-Ошибка уйдет, потому что вызвав функцию genereateError2('asdasf') вы больше никуда не пойдем, т.к она выкидывает ошибку
-*/
-function genereateError2(message) {
-    throw new Error(message);
-}
-function isString2(x) {
-    if (typeof x === 'string') {
-        return true;
-    }
-    else if (typeof x === 'number') {
-        return false;
-    }
-    genereateError2('asdasf');
-}
-/* never - помогает, ограничить какие-то ветки, какие-то случаи, когда явно необходимо проходить проверку по типам и необходимо какую-то ветку блокировать нсовсем если мы не хотим туда никогда попасть */ 
