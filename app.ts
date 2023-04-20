@@ -1,60 +1,50 @@
 /* Type Guard - Функция
 */
-
-function logId(id: string | number) {
-  if (typeof id === 'string') {
-    console.log(id); //string
-  } else if(typeof id === 'number') {
-    console.log(id); //number
-  }
-  id //string | number - Флоу типов
+interface IPayment {
+	sum: number;
+	from: number;
+	to: number;
 }
 
-/* как пишутся type guard */
-function logId2(id: string | number) {
-  if (isString(id)) {
-    console.log(id); //string
+enum PaymentStatus {
+	Success = 'success',
+	Failed = 'failed',
+}
+
+interface IPaymentRequest extends IPayment { }
+
+interface IDataSuccess extends IPayment {
+	databaseId: number;
+}
+
+interface IDataFailed {
+	errorMessage: string;
+	errorCode: number;
+}
+
+interface IResponseSuccess {
+	status: PaymentStatus.Success;
+	data: IDataSuccess;
+}
+
+interface IResponseFailed {
+	status: PaymentStatus.Failed;
+	data: IDataFailed;
+}
+
+type Res = IResponseSuccess | IResponseFailed
+
+function isSuccess(res: Res): res is IResponseSuccess {
+  if (res.status === PaymentStatus.Success) {
+    return true
+  }
+  return false
+}
+
+function getIdFromData(res: Res): number {
+  if (isSuccess(res)) {
+    return res.data.databaseId
   } else {
-    console.log(id); //number
+    throw new Error(res.data.errorMessage)
   }
 }
-
-function isString(x: string | number ): x is string { // запись показывает что x прошел проверку и будет строкой из двух типов string | number. Функция вернет boolean тип
-  return typeof x === 'string'
-}
-
-/*  */
-interface User {
-  name: string;
-  email: string;
-  login: string;
-}
-
-const user: User = {
-  name: 'Pavel',
-  email: 'q@q.ru',
-  login: 'pasha'
-}
-
-interface Admin {
-  name: string;
-  role: number;
-}
-
-function isAdmin(user: User | Admin): user is Admin {
-  return 'role' in user
-}
-
-function isAdminAlternative(user: User | Admin): user is Admin {
-  return (user as Admin).role !== undefined;
-}
-
-function setRoleZero(user: User | Admin) {
-  if(isAdmin(user)) {
-    user.role = 0
-  } else {
-    throw new Error('Пользователь не админ')
-  }
-}
-
-/* такие проверки не могут быть асинхронными */

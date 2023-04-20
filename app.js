@@ -1,44 +1,20 @@
 "use strict";
-/* Type Guard - Функция
-*/
-function logId(id) {
-    if (typeof id === 'string') {
-        console.log(id); //string
+var PaymentStatus;
+(function (PaymentStatus) {
+    PaymentStatus["Success"] = "success";
+    PaymentStatus["Failed"] = "failed";
+})(PaymentStatus || (PaymentStatus = {}));
+function isSuccess(res) {
+    if (res.status === PaymentStatus.Success) {
+        return true;
     }
-    else if (typeof id === 'number') {
-        console.log(id); //number
-    }
-    id; //string | number - Флоу типов
+    return false;
 }
-/* как пишутся type guard */
-function logId2(id) {
-    if (isString(id)) {
-        console.log(id); //string
-    }
-    else {
-        console.log(id); //number
-    }
-}
-function isString(x) {
-    return typeof x === 'string';
-}
-const user = {
-    name: 'Pavel',
-    email: 'q@q.ru',
-    login: 'pasha'
-};
-function isAdmin(user) {
-    return 'role' in user;
-}
-function isAdminAlternative(user) {
-    return user.role !== undefined;
-}
-function setRoleZero(user) {
-    if (isAdmin(user)) {
-        user.role = 0;
+function getIdFromData(res) {
+    if (isSuccess(res)) {
+        return res.data.databaseId;
     }
     else {
-        throw new Error('Пользователь не админ');
+        throw new Error(res.data.errorMessage);
     }
 }
-/* такие проверки не могут быть асинхронными */
