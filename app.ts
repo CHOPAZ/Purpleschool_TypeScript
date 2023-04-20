@@ -1,50 +1,18 @@
-/* Type Guard - Функция
+/* Assert - функция, в которой если не ывполняется условие, кидает ошибку
 */
-interface IPayment {
-	sum: number;
-	from: number;
-	to: number;
+
+interface User {
+  name: string;
 }
 
-enum PaymentStatus {
-	Success = 'success',
-	Failed = 'failed',
+const a = {};
+
+function assertUser(obj: unknown): asserts obj is User {
+  if (typeof obj === 'object' && !!obj && 'name' in obj) { // !!obj - проверка на null    
+    return
+  } 
+   throw new Error('Не пользователь')
 }
 
-interface IPaymentRequest extends IPayment { }
-
-interface IDataSuccess extends IPayment {
-	databaseId: number;
-}
-
-interface IDataFailed {
-	errorMessage: string;
-	errorCode: number;
-}
-
-interface IResponseSuccess {
-	status: PaymentStatus.Success;
-	data: IDataSuccess;
-}
-
-interface IResponseFailed {
-	status: PaymentStatus.Failed;
-	data: IDataFailed;
-}
-
-type Res = IResponseSuccess | IResponseFailed
-
-function isSuccess(res: Res): res is IResponseSuccess {
-  if (res.status === PaymentStatus.Success) {
-    return true
-  }
-  return false
-}
-
-function getIdFromData(res: Res): number {
-  if (isSuccess(res)) {
-    return res.data.databaseId
-  } else {
-    throw new Error(res.data.errorMessage)
-  }
-}
+assertUser(a)
+a.name = 'Вася'

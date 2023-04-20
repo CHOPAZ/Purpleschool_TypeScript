@@ -1,20 +1,12 @@
 "use strict";
-var PaymentStatus;
-(function (PaymentStatus) {
-    PaymentStatus["Success"] = "success";
-    PaymentStatus["Failed"] = "failed";
-})(PaymentStatus || (PaymentStatus = {}));
-function isSuccess(res) {
-    if (res.status === PaymentStatus.Success) {
-        return true;
+/* Assert - функция, в которой если не ывполняется условие, кидает ошибку
+*/
+const a = {};
+function assertUser(obj) {
+    if (typeof obj === 'object' && !!obj && 'name' in obj) { // !!obj - проверка на null    
+        return;
     }
-    return false;
+    throw new Error('Не пользователь');
 }
-function getIdFromData(res) {
-    if (isSuccess(res)) {
-        return res.data.databaseId;
-    }
-    else {
-        throw new Error(res.data.errorMessage);
-    }
-}
+assertUser(a);
+a.name = 'Вася';
