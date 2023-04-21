@@ -1,18 +1,28 @@
-/* Assert - функция, в которой если не ывполняется условие, кидает ошибку
+/* Создание класса
 */
 
-interface User {
-  name: string;
+class User {
+  name: string
+
+  constructor(name: string) {
+    this.name = name;
+  }
 }
 
-const a = {};
+const user = new User('Pavel');
+console.log(user);
+user.name = "Petya"
+console.log(user);
 
-function assertUser(obj: unknown): asserts obj is User {
-  if (typeof obj === 'object' && !!obj && 'name' in obj) { // !!obj - проверка на null    
-    return
-  } 
-   throw new Error('Не пользователь')
+
+
+/* Будет ошибка, ts не даст так сделать. Что бы исправить:
+  1 Вариант в tsconfig найти strictPropertyInitialization и поставить false
+  2 Вариант поставить role!
+*/
+class Admin {
+  role: number;
 }
 
-assertUser(a)
-a.name = 'Вася'
+const admin = new Admin()
+admin.role = 1;

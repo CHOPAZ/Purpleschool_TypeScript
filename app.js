@@ -1,12 +1,20 @@
 "use strict";
-/* Assert - функция, в которой если не ывполняется условие, кидает ошибку
+/* Создание класса
 */
-const a = {};
-function assertUser(obj) {
-    if (typeof obj === 'object' && !!obj && 'name' in obj) { // !!obj - проверка на null    
-        return;
+class User {
+    constructor(name) {
+        this.name = name;
     }
-    throw new Error('Не пользователь');
 }
-assertUser(a);
-a.name = 'Вася';
+const user = new User('Pavel');
+console.log(user);
+user.name = "Petya";
+console.log(user);
+/* Будет ошибка, ts не даст так сделать. Что бы исправить:
+  1 Вариант в tsconfig найти strictPropertyInitialization и поставить false
+  2 Вариант поставить role!
+*/
+class Admin {
+}
+const admin = new Admin();
+admin.role = 1;
