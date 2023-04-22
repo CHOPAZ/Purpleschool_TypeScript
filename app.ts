@@ -1,38 +1,34 @@
-/* Методы
+/* Упражнение - перезагрузка методов
 */
 
 
-enum PaymentStatus {
-  Holded,
-  Processed,
-  Reversed
-}
-class Payment {
-  id: number;
-  status: PaymentStatus = PaymentStatus.Holded;;
-  createdAt: Date = new Date();
-  updatedAt: Date;
+class User {
+  skills: string[] = [];
 
-  constructor(id: number) {
-    this.id = id;
-  }
-
-  getPaymentLifeTime():number {
-    return new Date().getTime() - this.createdAt.getTime()
-  }
-
-  unholdPayment(): void {
-    if (this.status == PaymentStatus.Processed) {
-      throw new Error('Платеж не может быть возвращен')
+  addSkill(skill: string): void;
+  addSkill(skills: string[]): void;
+  addSkill(skillOrSkills: string | string[]): void {
+    if (typeof skillOrSkills == 'string'){
+      this.skills.push(skillOrSkills)
+    } else {
+      this.skills = this.skills.concat(skillOrSkills)
     }
-
-    this.status = PaymentStatus.Reversed;
-    this.updatedAt = new Date()
+    
   }
 }
 
-const payment = new Payment(1);
-payment.unholdPayment();
-console.log(payment);
-const time = payment.getPaymentLifeTime()
-console.log(time);
+new User().addSkill('Dev');
+new User().addSkill(['DevOps'])
+
+
+/* Дополнение функции */
+function run(distance: string): string
+function run(distance: number): number
+function run(distance: number | string): number | string {
+  if (typeof distance == 'number') {
+    return 1
+  } else {
+    return ''
+  }
+}
+
