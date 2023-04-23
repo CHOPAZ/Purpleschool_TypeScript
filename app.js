@@ -1,23 +1,33 @@
 "use strict";
-/* Getter и Setter - позволяют переопределить как будет присваиваться или получаться свойство объекта
+/* Implements кдассам интерфейсов. Позволяет абстрагироваться от конкретной реализации
+   и предварительно договориться о той форме класса или его свойств, которые необходимы
+
+   Если мы хотим сделать метод асинхронным:
+
+   async error(...args: any[]): Promise<void> {
+    // Кинуть во внешнюю системы
+    console.log(...args);
+  }
 */
-/* 'user-...' */
-class User {
-    set login(l) {
-        this._login = 'user-' + l;
+class Logger {
+    log(...args) {
+        console.log(...args);
     }
-    get login() {
-        return 'no_login';
+    error(...args) {
+        // Кинуть во внешнюю системы
+        console.log(...args);
     }
 }
-const user = new User();
-user.login = 'myLogin';
-console.log(user);
-console.log(user.login);
-/* ОГраничения Getter и Setter
-  
-  1. Если мы не укажем тип для l - l автоматичеки будет string, - это свойство того, что возвращает getter, должен и получать setter
-  2. Для Getter и Setter можно определить что l может быть не только string но и number
-  3. Если не использовать setter, то свойство _login будет readonly, т.е его нельзя модифицировать
-  4. Getter и Setter не могут быть асинхронными
-*/
+class User {
+    pay(paymentId) {
+        //
+    }
+}
+class User2 {
+    delete() {
+        //
+    }
+    pay(paymentId) {
+        //
+    }
+}

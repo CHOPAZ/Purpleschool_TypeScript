@@ -1,32 +1,64 @@
-/* Getter и Setter - позволяют переопределить как будет присваиваться или получаться свойство объекта
+/* Implements кдассам интерфейсов. Позволяет абстрагироваться от конкретной реализации
+   и предварительно договориться о той форме класса или его свойств, которые необходимы
+
+   Если мы хотим сделать метод асинхронным:
+
+   async error(...args: any[]): Promise<void> {
+    // Кинуть во внешнюю системы
+    console.log(...args);
+  }
 */
 
 
-/* 'user-...' */
-
-class User {
-  _login: string;
-  password: string;
-
-  set login(l) {
-    this._login = 'user-' + l;
-  }
-
-  get login() {
-    return 'no_login'
-  }
+interface ILogger {
+  log(...args): void;
+  error(...args): void;
 }
 
-const user = new User();
-user.login = 'myLogin';
-console.log(user);
-console.log(user.login);
-
-/* ОГраничения Getter и Setter
+class Logger implements ILogger {
+  log(...args: any[]): void {
+    console.log(...args);
+  }
+  error(...args: any[]): void {
+    // Кинуть во внешнюю системы
+    console.log(...args);
+  }
   
-  1. Если мы не укажем тип для l - l автоматичеки будет string, - это свойство того, что возвращает getter, должен и получать setter
-  2. Для Getter и Setter можно определить что l может быть не только string но и number
-  3. Если не использовать setter, то свойство _login будет readonly, т.е его нельзя модифицировать
-  4. Getter и Setter не могут быть асинхронными
-*/
+
+}
+
+/* Частичная имплементация интерфейса */
+interface IPayble {
+  pay(paymentId: number): void;
+  price?: number;
+}
+
+class User implements IPayble {
+  pay(paymentId: number | string): void { //number | string - работать будет, если оставить только string не будет работать
+    //
+  }
+
+}
+
+
+/*  */
+
+interface IPayble2 {
+  pay(paymentId: number): void;
+  price?: number;
+}
+
+interface IDeletable {
+  delete(): void
+}
+
+class User2 implements IPayble, IDeletable {
+  delete(): void {
+    //
+  }
+  pay(paymentId: number | string): void { 
+    //
+  }
+
+}
 
