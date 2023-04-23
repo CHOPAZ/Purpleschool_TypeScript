@@ -1,5 +1,5 @@
 "use strict";
-/* Extends - наследование
+/* Особенности наследования
 */
 class Payment {
     constructor(id) {
@@ -40,3 +40,30 @@ class PersistedPayment extends Payment {
 }
 // new PersistedPayment().pay() //метод из класса Payment
 new PersistedPayment().save(); // метод из класса PersistedPayment
+/* Порядок вызова конструктора и свойств */
+/* 1. Инициализируется свойство name: string = 'User' класса User
+   2. Вызывается конструктор User
+   3. Инициализируется свойство  name: string = 'Admin' класса Admin
+   4. Вызывается конструктор Admin
+*/
+class User {
+    constructor() {
+        this.name = 'User';
+        console.log(this.name);
+    }
+}
+class Admin extends User {
+    constructor() {
+        super(); // супер всегда, должен быть перед какимито действиями, заисключением крайних случаев например как на строчке 27-28
+        this.name = 'Admin';
+        console.log(this.name);
+    }
+}
+new Admin(); // в консоль выведится User и Admin
+/*  */
+class HttpError extends Error {
+    constructor(message, code) {
+        super(message);
+        this.code = code !== null && code !== void 0 ? code : 500;
+    }
+}

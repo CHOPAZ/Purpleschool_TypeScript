@@ -1,4 +1,4 @@
-/* Extends - наследование
+/* Особенности наследования
 */
 
 type PaymentStatus = 'new' | 'paid';
@@ -54,3 +54,45 @@ class PersistedPayment extends Payment {
 
 // new PersistedPayment().pay() //метод из класса Payment
 new PersistedPayment().save() // метод из класса PersistedPayment
+
+
+/* Порядок вызова конструктора и свойств */
+/* 1. Инициализируется свойство name: string = 'User' класса User
+   2. Вызывается конструктор User
+   3. Инициализируется свойство  name: string = 'Admin' класса Admin
+   4. Вызывается конструктор Admin
+*/
+
+class User {
+  name: string = 'User'
+
+  constructor() {
+    console.log(this.name);
+  }
+}
+
+class Admin extends User {
+  name: string = 'Admin';
+  constructor() {
+   super() // супер всегда, должен быть перед какимито действиями, заисключением крайних случаев например как на строчке 27-28
+   console.log(this.name);
+  }
+
+}
+
+new Admin() // в консоль выведится User и Admin
+
+
+/*  */
+
+class HttpError extends Error {
+  code: number;
+  
+  constructor(message: string, code?: number) {
+    super(message);
+    this.code = code ?? 500
+  }
+
+
+}
+
