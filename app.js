@@ -1,33 +1,42 @@
 "use strict";
-/* Implements кдассам интерфейсов. Позволяет абстрагироваться от конкретной реализации
-   и предварительно договориться о той форме класса или его свойств, которые необходимы
-
-   Если мы хотим сделать метод асинхронным:
-
-   async error(...args: any[]): Promise<void> {
-    // Кинуть во внешнюю системы
-    console.log(...args);
-  }
+/* Extends - наследование
 */
-class Logger {
-    log(...args) {
-        console.log(...args);
+class Payment {
+    constructor(id) {
+        this.status = 'new';
+        this.id = id;
     }
-    error(...args) {
-        // Кинуть во внешнюю системы
-        console.log(...args);
+    pay() {
+        this.status = 'paid';
     }
-}
-class User {
-    pay(paymentId) {
-        //
+    pay2() {
+        this.status = 'paid';
     }
 }
-class User2 {
-    delete() {
-        //
+class PersistedPayment extends Payment {
+    constructor() {
+        const id = Math.random();
+        super(id);
     }
-    pay(paymentId) {
-        //
+    save() {
+        // например сохраняет в базу
+    }
+    /* переопределение методов. Override методов */
+    /* Будет ошибка, потому что в методе Payment нет аргумента date, что бы исправить необходимо поставить date? */
+    pay(date) {
+        // this.status = 'paid'; - если в методе Payment изменится логика, то ее нужно переносить сюда, поэтому нужно заменить строчку на super.pay()
+        super.pay();
+        if (date) {
+            this.paidAt = date;
+        }
+    }
+    /* В новом обновлении TS появился новый модификатор override - который показывает что переопределили метод */
+    pay2(date) {
+        super.pay();
+        if (date) {
+            this.paidAt = date;
+        }
     }
 }
+// new PersistedPayment().pay() //метод из класса Payment
+new PersistedPayment().save(); // метод из класса PersistedPayment

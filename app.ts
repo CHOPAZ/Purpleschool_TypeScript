@@ -1,64 +1,56 @@
-/* Implements кдассам интерфейсов. Позволяет абстрагироваться от конкретной реализации
-   и предварительно договориться о той форме класса или его свойств, которые необходимы
-
-   Если мы хотим сделать метод асинхронным:
-
-   async error(...args: any[]): Promise<void> {
-    // Кинуть во внешнюю системы
-    console.log(...args);
-  }
+/* Extends - наследование
 */
 
+type PaymentStatus = 'new' | 'paid';
+class Payment {
+  id: number;
+  status: PaymentStatus = 'new';
 
-interface ILogger {
-  log(...args): void;
-  error(...args): void;
-}
-
-class Logger implements ILogger {
-  log(...args: any[]): void {
-    console.log(...args);
-  }
-  error(...args: any[]): void {
-    // Кинуть во внешнюю системы
-    console.log(...args);
-  }
-  
-
-}
-
-/* Частичная имплементация интерфейса */
-interface IPayble {
-  pay(paymentId: number): void;
-  price?: number;
-}
-
-class User implements IPayble {
-  pay(paymentId: number | string): void { //number | string - работать будет, если оставить только string не будет работать
-    //
+  constructor(id: number) {
+    this.id = id
   }
 
-}
-
-
-/*  */
-
-interface IPayble2 {
-  pay(paymentId: number): void;
-  price?: number;
-}
-
-interface IDeletable {
-  delete(): void
-}
-
-class User2 implements IPayble, IDeletable {
-  delete(): void {
-    //
-  }
-  pay(paymentId: number | string): void { 
-    //
+  pay() {
+    this.status = 'paid'
   }
 
+  pay2() {
+    this.status = 'paid'
+  }
 }
 
+class PersistedPayment extends Payment {
+  datavaseId: number;
+  paidAt: Date;
+
+  constructor() {
+    const id = Math.random()
+    super(id);
+  }
+
+  save() {
+    // например сохраняет в базу
+  }
+
+  /* переопределение методов. Override методов */
+  /* Будет ошибка, потому что в методе Payment нет аргумента date, что бы исправить необходимо поставить date? */
+  pay(date?: Date) {
+    // this.status = 'paid'; - если в методе Payment изменится логика, то ее нужно переносить сюда, поэтому нужно заменить строчку на super.pay()
+    super.pay()
+    if (date) {
+      this.paidAt = date
+    }
+  }
+
+  /* В новом обновлении TS появился новый модификатор override - который показывает что переопределили метод */
+  override pay2(date?: Date) {
+    super.pay()
+    if (date) {
+      this.paidAt = date
+    }
+  }
+}
+
+
+// new PersistedPayment().pay() //метод из класса Payment
+new PersistedPayment().save() // метод из класса PersistedPayment
