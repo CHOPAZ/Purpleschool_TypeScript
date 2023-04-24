@@ -1,48 +1,37 @@
 "use strict";
-/* Композиция VS Наследование
+/* Видимость свойств и методов
 
-
+  private - есть только в ts
+  # - в js - работает не только на этаме компеляции, но и на этапе когда получим js  и работаем с ним
 */
-/* Наследование */
-class User {
-    constructor(name) {
-        this.name = name;
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
+    if (kind === "m") throw new TypeError("Private method is not writable");
+    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
+    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
+    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
+};
+var _Vehicle_price;
+class Vehicle {
+    constructor() {
+        _Vehicle_price.set(this, void 0); // приватное свойство
+    }
+    addDamages(damage) {
+        this.damages.push(damage);
+    }
+    set model(m) {
+        this._model = m;
+        __classPrivateFieldSet(this, _Vehicle_price, 100, "f");
+    }
+    get model() {
+        return this._model;
     }
 }
-class Users extends Array {
-    searchByName(name) {
-        return this.filter(u => u.name === name);
-    }
-    toString() {
-        return this.map(u => u.name).join(', ');
-    }
-}
-const users = new Users();
-users.push(new User('Vasya')); // можно применять методы массива
-users.push(new User('Petya')); // можно применять методы массива
-console.log(users.toString()); //[object Object] - не имеет смысл этот метод
-/* Вот такие утилетарные методы (toString(), toLocaleString() и тд) должны быть правильно override и  в них есть бизнес смысл. Поэтому такие утилетарные типы не стоит так мешать с бизнес типасми */
-/* Как лучше. Композиция - из нескольких элементов*/
-class UsersList {
-    push(u) {
-        this.users.push(u);
+_Vehicle_price = new WeakMap();
+class EuroTruck extends Vehicle {
+    setRun(km) {
+        //this._model - нельзя получить
+        //this.#price = 100 - нельзя
+        this.run = km / 0.62;
     }
 }
-/* Второй пример. Изменение предметной облости */
-/* Одна предметная область Payment. Как отдельный домейн */
-class Payment {
-}
-/* Друггая предметная область  UserWithPayment. */
-class UserWithPayment extends Payment {
-}
-/* Как сделать правильно. UserWithPayment2 - некторый агрегационный класс, который в результате делает композицию из User и Payment */
-class UserWithPayment2 {
-    constructor(user, payment) {
-        this.payment = payment;
-        this.user = user;
-    }
-}
-/* 1. Наследование лучше использовать когда наследование происходит в рамках одной доменной области
-   2. Наследование лучше НЕ использовать, когда наследование происходит от агрегационных, сложных, внутренних, например массивов  Array<User>, но от маленьких утилетарных классов например Error можно так делать
-   3. Наследование лучше НЕ использовать, когда идет пересечение доменной области. Композиция упростит код, и уменьшит связанность
-*/ 
+new Vehicle();

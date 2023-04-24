@@ -1,70 +1,38 @@
-/* Композиция VS Наследование
+/* Видимость свойств и методов
 
-
+  private - есть только в ts
+  # - в js - работает не только на этаме компеляции, но и на этапе когда получим js  и работаем с ним
 */
 
-/* Наследование */
-class User {
-  name: string;
+class Vehicle {
+  public make: string; // публичное свойство - public make: string;
+  private damages: string[]; //приватное свойство -  private damages: string[];
+  private _model: string;
+  protected run: number; // отличие от private, что это свойство можно получить в другом отнаследованном классе (EuroTruck)
+  #price: number; // приватное свойство
 
-  constructor(name: string) {
-    this.name = name
+  addDamages(damage: string) {
+    this.damages.push(damage)
+  }
+
+  set model(m: string) {
+    this._model = m;
+    this.#price = 100
+  }
+
+  get model() {
+    return this._model
   }
 }
 
-class Users extends Array<User> {
-  searchByName(name: string) {
-    return this.filter(u => u.name === name)
-  }
-
-  override toString(): string { // переопределили метод toString()
-    return this.map(u => u.name).join(', ')
-  }
-  
-}
-const users = new Users();
-users.push(new User('Vasya')) // можно применять методы массива
-users.push(new User('Petya')) // можно применять методы массива
-console.log(users.toString()); //[object Object] - не имеет смысл этот метод
 
 
-/* Вот такие утилетарные методы (toString(), toLocaleString() и тд) должны быть правильно override и  в них есть бизнес смысл. Поэтому такие утилетарные типы не стоит так мешать с бизнес типасми */
-
-/* Как лучше. Композиция - из нескольких элементов*/
-
-class UsersList {
-  users: User[];
-
-  push(u: User) {
-    this.users.push(u)
+class EuroTruck extends Vehicle {
+  setRun(km: number) {
+    //this._model - нельзя получить
+    //this.#price = 100 - нельзя
+    this.run = km / 0.62
   }
 }
 
-/* Второй пример. Изменение предметной облости */
-
-/* Одна предметная область Payment. Как отдельный домейн */
-class Payment {
-  date: Date;
-
-}
-
-/* Друггая предметная область  UserWithPayment. */
-class UserWithPayment extends Payment {
-  name: string;
-}
-
-/* Как сделать правильно. UserWithPayment2 - некторый агрегационный класс, который в результате делает композицию из User и Payment */
-class UserWithPayment2 {
-  user: User;
-  payment: Payment;
-
-  constructor(user: User, payment: Payment) {
-    this.payment = payment;
-    this.user = user
-  }
-}
-
-/* 1. Наследование лучше использовать когда наследование происходит в рамках одной доменной области
-   2. Наследование лучше НЕ использовать, когда наследование происходит от агрегационных, сложных, внутренних, например массивов  Array<User>, но от маленьких утилетарных классов например Error можно так делать
-   3. Наследование лучше НЕ использовать, когда идет пересечение доменной области. Композиция упростит код, и уменьшит связанность
-*/
+new Vehicle()
