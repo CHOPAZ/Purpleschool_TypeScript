@@ -1,93 +1,37 @@
-/* Упражнение - Корзина товаров
+/* Статические свойства
+  Статичные классы не могут быть, из-за того что JS не ограничен только классами. Поэтому можно статичным задать не класс, а какие-то свойства или методы класса
 */
 
-class Product {
-  constructor(
-    public id: number,
-    public title: string,
-    public price: number
-    ) {}
-}
+class UserService {
+  static db: any;
+  private static db2: any;
 
-/* Класс Доставки */
-class Delivery {
-  constructor(
-    public date: Date
-    ) {}
-}
+  constructor(id: number) {
 
-/* Доставка до дома */
-class HomeDelivery extends Delivery {
-  constructor(
-    date: Date,
-    public address: string
-    ) {
-      super(date)
-    }
-}
+  }
 
-/* Доставка до пункта выдачи */
-class ShopDelivery extends Delivery {
-  constructor(
-    public shopId: number
-    ) {
-    super(new Date)
+  static getDB(id: number) {
+    // return this.db.findById(id);
+    /* Правильная запись */
+    return UserService.db.findById(id);
+  }
+
+  create() {
+    UserService.db
+  }
+
+  /* некий инициализатор статичного класса. Асинхронные действия нельзя делать */
+  static {
+    /* пример */
+    UserService.db = 'afsa'
   }
 }
 
-type DeliveryOptions = HomeDelivery | ShopDelivery
-
-/* Корзина */
-class Cart {
-  private products: Product[] = [];
-  private delivery: DeliveryOptions;
-
-  addProduct(product: Product): void {
-    this.products.push(product)
-  }
-
-  deletProduct(productId: number): void {
-    this.products = this.products.filter((p: Product) => p.id !== productId)
-  }
-
-  /* Получение суммы */
-  getSum(): number {
-    return this.products
-      .map((p: Product) => p.price)
-      .reduce((prev: number, acc: number) => prev + acc, 0)
-  }
-
-  /* Получение продуктов */
-  getProducts() {
-    return this.products
-  }
-
-  /* Задаем доставку */
-  setDelivery(delivery: DeliveryOptions): void {
-    this.delivery = delivery;
-  }
-
-  checkOut() {
-    if (this.products.length === 0) {
-      throw new Error('Нет никакого товара');
-    }
-    if (!this.delivery) {
-      throw new Error('Нет указан способ доставки');
-    }
-    return {seccess: true}
+/* Для того что бы обратится к свойству db, не требуется создавать инстанс */
+UserService.db
+UserService.getDB(2)
+// UserService.create() - не сможем получить
+const inst = new UserService(1);
+inst.create() // можем получить доступ
 
 
-  }
-}
-
-
-
-const cart = new Cart();
-cart.addProduct(new Product(1, 'Печенье', 10));
-cart.addProduct(new Product(2, 'Торт', 20));
-cart.addProduct(new Product(3, 'Шоколад', 15));
-cart.deletProduct(1);
-cart.setDelivery(new HomeDelivery(new Date, 'asdf'));
-console.log(cart.getSum());
-console.log(cart.checkOut());
-console.log(cart.getProducts());
