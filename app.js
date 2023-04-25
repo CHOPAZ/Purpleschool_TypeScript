@@ -1,37 +1,74 @@
 "use strict";
-/* Видимость свойств и методов
-
-  private - есть только в ts
-  # - в js - работает не только на этаме компеляции, но и на этапе когда получим js  и работаем с ним
+/* Упражнение - Корзина товаров
 */
-var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
-    if (kind === "m") throw new TypeError("Private method is not writable");
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-};
-var _Vehicle_price;
-class Vehicle {
+class Product {
+    constructor(id, title, price) {
+        this.id = id;
+        this.title = title;
+        this.price = price;
+    }
+}
+/* Класс Доставки */
+class Delivery {
+    constructor(date) {
+        this.date = date;
+    }
+}
+/* Доставка до дома */
+class HomeDelivery extends Delivery {
+    constructor(date, address) {
+        super(date);
+        this.address = address;
+    }
+}
+/* Доставка до пункта выдачи */
+class ShopDelivery extends Delivery {
+    constructor(shopId) {
+        super(new Date);
+        this.shopId = shopId;
+    }
+}
+/* Корзина */
+class Cart {
     constructor() {
-        _Vehicle_price.set(this, void 0); // приватное свойство
+        this.products = [];
     }
-    addDamages(damage) {
-        this.damages.push(damage);
+    addProduct(product) {
+        this.products.push(product);
     }
-    set model(m) {
-        this._model = m;
-        __classPrivateFieldSet(this, _Vehicle_price, 100, "f");
+    deletProduct(productId) {
+        this.products = this.products.filter((p) => p.id !== productId);
     }
-    get model() {
-        return this._model;
+    /* Получение суммы */
+    getSum() {
+        return this.products
+            .map((p) => p.price)
+            .reduce((prev, acc) => prev + acc, 0);
+    }
+    /* Получение продуктов */
+    getProducts() {
+        return this.products;
+    }
+    /* Задаем доставку */
+    setDelivery(delivery) {
+        this.delivery = delivery;
+    }
+    checkOut() {
+        if (this.products.length === 0) {
+            throw new Error('Нет никакого товара');
+        }
+        if (!this.delivery) {
+            throw new Error('Нет указан способ доставки');
+        }
+        return { seccess: true };
     }
 }
-_Vehicle_price = new WeakMap();
-class EuroTruck extends Vehicle {
-    setRun(km) {
-        //this._model - нельзя получить
-        //this.#price = 100 - нельзя
-        this.run = km / 0.62;
-    }
-}
-new Vehicle();
+const cart = new Cart();
+cart.addProduct(new Product(1, 'Печенье', 10));
+cart.addProduct(new Product(2, 'Торт', 20));
+cart.addProduct(new Product(3, 'Шоколад', 15));
+cart.deletProduct(1);
+cart.setDelivery(new HomeDelivery(new Date, 'asdf'));
+console.log(cart.getSum());
+console.log(cart.checkOut());
+console.log(cart.getProducts());
