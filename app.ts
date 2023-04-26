@@ -1,43 +1,41 @@
-/*  Типизация this
+/*  Абстрактные классы и методы
 */
-class UserBilder {
-  name: string;
 
-  setName(name: string): this { //this - будет ссылатся на UserBilder
-    this.name = name;
-    return this
+abstract class Controller {
+  abstract handle(req: any): void
+}
+
+
+/* ts скажет что в классе  UserController необходимо реализовать метод handle */
+class UserController extends Controller {
+  handle(req: any): void {
+    console.log(req);
   }
+}
 
-  /* Type Guard */
-  isAdmin(): this is AdminBuilder {
-    return this instanceof AdminBuilder;
+// new Controller() - так сджелать нельзя, потому что это абстрактный класс, можно только его наследовать
+new UserController();
+
+/* Преимущества
+  1. В абстрактном классе могут быть необязательно абстрактные методы
+  2. В нутри метода можно вызывать абстрактные методы
+*/
+
+abstract class Controller2 {
+  abstract handle(req: any): void;
+
+  handleWithLogs(req: any) {
+    console.log('start');
+    this.handle(req)
+    console.log('End');
   }
 }
 
-const res = new UserBilder().setName('Вася');
-
-/* Колиззии.
-
-  Если типизировать функцию как setName(): UserBilder - то this будет ссылаться всегда на UserBilder, и это будет неправильно и res2 будет ссылаться на UserBilder. Поэтому правильно типизировать setName(): this
-*/
-
-class AdminBuilder extends UserBilder {
-  roles: string[];
-
+class UserController2 extends Controller2 {
+  handle(req: any): void {
+    console.log(req);
+  }
 }
 
-const res2 = new AdminBuilder().setName('Паша');
-
-/* Type Guard */
-
-let user: UserBilder | AdminBuilder = new UserBilder();
-if ( user.isAdmin()) {
-  console.log(user); //let user: AdminBuilder
-} else {
-  console.log(user); //let user: UserBilder
-}
-
-/* Замечание
-  Если объекты полностью совпадают, они будут одним и тем же.
-  Например если не будет в AdminBuilder -  roles: string[], то результат Type Gyarda будет let user: UserBilder | AdminBuilder, и в else будет let user: never
-*/
+const c = new UserController2();
+c.handleWithLogs('req')

@@ -1,33 +1,31 @@
 "use strict";
-/*  Типизация this
+/*  Абстрактные классы и методы
 */
-class UserBilder {
-    setName(name) {
-        this.name = name;
-        return this;
-    }
-    /* Type Guard */
-    isAdmin() {
-        return this instanceof AdminBuilder;
+class Controller {
+}
+/* ts скажет что в классе  UserController необходимо реализовать метод handle */
+class UserController extends Controller {
+    handle(req) {
+        console.log(req);
     }
 }
-const res = new UserBilder().setName('Вася');
-/* Колиззии.
-
-  Если типизировать функцию как setName(): UserBilder - то this будет ссылаться всегда на UserBilder, и это будет неправильно и res2 будет ссылаться на UserBilder. Поэтому правильно типизировать setName(): this
+// new Controller() - так сджелать нельзя, потому что это абстрактный класс, можно только его наследовать
+new UserController();
+/* Преимущества
+  1. В абстрактном классе могут быть необязательно абстрактные методы
+  2. В нутри метода можно вызывать абстрактные методы
 */
-class AdminBuilder extends UserBilder {
+class Controller2 {
+    handleWithLogs(req) {
+        console.log('start');
+        this.handle(req);
+        console.log('End');
+    }
 }
-const res2 = new AdminBuilder().setName('Паша');
-/* Type Guard */
-let user = new UserBilder();
-if (user.isAdmin()) {
-    console.log(user); //let user: AdminBuilder
+class UserController2 extends Controller2 {
+    handle(req) {
+        console.log(req);
+    }
 }
-else {
-    console.log(user); //let user: UserBilder
-}
-/* Замечание
-  Если объекты полностью совпадают, они будут одним и тем же.
-  Например если не будет в AdminBuilder -  roles: string[], то результат Type Gyarda будет let user: UserBilder | AdminBuilder, и в else будет let user: never
-*/ 
+const c = new UserController2();
+c.handleWithLogs('req');
