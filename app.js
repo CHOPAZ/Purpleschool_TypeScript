@@ -1,60 +1,33 @@
 "use strict";
-/*  Работа с this
+/*  Типизация this
 */
-class Payment {
-    constructor() {
-        this.date = new Date();
+class UserBilder {
+    setName(name) {
+        this.name = name;
+        return this;
     }
-    getDate() {
-        return this.date;
-    }
-}
-const p = new Payment();
-const user = {
-    id: 1,
-    paymentDate: p.getDate.bind(p)
-};
-console.log(p.getDate());
-console.log(user.paymentDate());
-/* Как указать ts что  в данном случае будет ошибка, т.е если не забаиндить this, то будет undefinde */
-class Payment2 {
-    constructor() {
-        this.date = new Date();
-    }
-    getDate() {
-        return this.date;
+    /* Type Guard */
+    isAdmin() {
+        return this instanceof AdminBuilder;
     }
 }
-const p2 = new Payment2();
-const user2 = {
-    id: 1,
-    paymentDate: p2.getDate.bind(p2)
-};
-console.log(p2.getDate());
-console.log(user2.paymentDate());
-/* Одна из возможностей не терять контекст использовать стрелочные функции */
-class Payment3 {
-    constructor() {
-        this.date = new Date();
-        this.getDateArrow = () => {
-            return this.date;
-        };
-    }
-    getDate() {
-        return this.date;
-    }
+const res = new UserBilder().setName('Вася');
+/* Колиззии.
+
+  Если типизировать функцию как setName(): UserBilder - то this будет ссылаться всегда на UserBilder, и это будет неправильно и res2 будет ссылаться на UserBilder. Поэтому правильно типизировать setName(): this
+*/
+class AdminBuilder extends UserBilder {
 }
-const p3 = new Payment3();
-const user3 = {
-    id: 1,
-    paymentDate: p3.getDate.bind(p3),
-    paymentDateArrow: p3.getDateArrow
-};
-console.log(user3.paymentDateArrow());
-/* Случаи когда стрелочная функция ен будет работать */
-class PaymentPersistent extends Payment3 {
-    save() {
-        return super.getDateArrow();
-    }
+const res2 = new AdminBuilder().setName('Паша');
+/* Type Guard */
+let user = new UserBilder();
+if (user.isAdmin()) {
+    console.log(user); //let user: AdminBuilder
 }
-console.log(new PaymentPersistent().save()); // .getDateArrow is not a function - потому что в прототипе Payment не будет функции стрелочной, но если заенить на  return this.getDateArrow() - работать будет
+else {
+    console.log(user); //let user: UserBilder
+}
+/* Замечание
+  Если объекты полностью совпадают, они будут одним и тем же.
+  Например если не будет в AdminBuilder -  roles: string[], то результат Type Gyarda будет let user: UserBilder | AdminBuilder, и в else будет let user: never
+*/ 
