@@ -16,26 +16,31 @@ class UserController extends Controller {
 // new Controller() - так сджелать нельзя, потому что это абстрактный класс, можно только его наследовать
 new UserController();
 
-/* Преимущества
-  1. В абстрактном классе могут быть необязательно абстрактные методы
-  2. В нутри метода можно вызывать абстрактные методы
+/* Необходимо реализовать абстрактный класс Logger с 2-мя методами
+абстрактным - log(message): void
+printDate - выводящий в log дату
+К нему необходимо сделать реальный класс, который бы имел метод: logWithDate,
+выводящий сначала дату, а потом заданное сообщение
 */
 
-abstract class Controller2 {
-  abstract handle(req: any): void;
+abstract class Logger {
+  abstract log(message: string): void;
 
-  handleWithLogs(req: any) {
-    console.log('start');
-    this.handle(req)
-    console.log('End');
+  printDate(date: Date) {
+    this.log(date.toString());
   }
 }
 
-class UserController2 extends Controller2 {
-  handle(req: any): void {
-    console.log(req);
+class Datelogger extends Logger {
+  log(message: string): void {
+    console.log(message);
+  }
+  
+  logWithDate(message: any) {
+    this.printDate(new Date());
+    this.log(message)
   }
 }
 
-const c = new UserController2();
-c.handleWithLogs('req')
+const data = new Datelogger();
+data.logWithDate('asfsaf')
