@@ -1,20 +1,19 @@
 /*  Generic - обобщенный тип позволяет резервировать место для типа, который будет при вызове заменен на определенный
 
-Пример встроенных Generic
+Функция generic
 */
-const arr: Array<number> = [1, 2, 3]; // interface Array<T> - T generic
-
-/* Промисы */
-async function test() {
-  const prom = await new Promise<number>((resolve, reject) => {
-    resolve(1)
-  })
+function logMiddleWare<T>(data: T): T {
+  console.log(data);
+  return data
 }
 
-/* Recorc - словарь с ключом значений. drive - string, true - boolean */
-const check: Record<string, boolean> = {
-  drive: true,
-  kpp: false
+const res1 = logMiddleWare<string>('10');
+const res2 = logMiddleWare<number>(10);
+
+function getSplitedHalf<T>(arr: Array<T>): Array<T> {
+  const len = arr.length / 2;
+  return arr.splice(0, len)
 }
 
-
+getSplitedHalf<number>([1, 3, 4])
+getSplitedHalf([1, 3, 4])
