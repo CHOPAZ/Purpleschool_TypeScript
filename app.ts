@@ -1,19 +1,32 @@
-/*  Generic - обобщенный тип позволяет резервировать место для типа, который будет при вызове заменен на определенный
-
-Функция generic
+/*  
+  Написать функцию toString, которая принимает любой тип
+  и возвращает его строковое представление. Если не может, то
+  возвращает undefined
 */
-function logMiddleWare<T>(data: T): T {
-  console.log(data);
-  return data
+
+function toString<T>(arg: T): string | undefined {
+  if(Array.isArray(arg)) {
+    return arg.toString();
+  }
+
+  switch (typeof arg) {
+    case 'string':
+      return arg;
+    case 'number':
+    case 'symbol':
+    case 'bigint':
+    case 'boolean':
+    case 'function':
+      return arg.toString();
+    case 'object':
+      return JSON.stringify(arg);
+    default:
+      return undefined;
+  }
 }
 
-const res1 = logMiddleWare<string>('10');
-const res2 = logMiddleWare<number>(10);
-
-function getSplitedHalf<T>(arr: Array<T>): Array<T> {
-  const len = arr.length / 2;
-  return arr.splice(0, len)
-}
-
-getSplitedHalf<number>([1, 3, 4])
-getSplitedHalf([1, 3, 4])
+console.log(toString(3));
+console.log(toString(true));
+console.log(toString(['a', 'b']));
+console.log(toString({a: 1}));
+console.log(toString('a'));
