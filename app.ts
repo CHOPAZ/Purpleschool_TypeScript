@@ -1,32 +1,39 @@
 /*  
-  Написать функцию toString, которая принимает любой тип
-  и возвращает его строковое представление. Если не может, то
-  возвращает undefined
+  Использование в типах
 */
 
-function toString<T>(arg: T): string | undefined {
-  if(Array.isArray(arg)) {
-    return arg.toString();
-  }
-
-  switch (typeof arg) {
-    case 'string':
-      return arg;
-    case 'number':
-    case 'symbol':
-    case 'bigint':
-    case 'boolean':
-    case 'function':
-      return arg.toString();
-    case 'object':
-      return JSON.stringify(arg);
-    default:
-      return undefined;
-  }
+function logMiddleware<T>(data: T): T {
+	console.log(data);
+	return data;
 }
 
-console.log(toString(3));
-console.log(toString(true));
-console.log(toString(['a', 'b']));
-console.log(toString({a: 1}));
-console.log(toString('a'));
+const res = logMiddleware<number>(10);
+
+function getSplitedHalf<T>(data: Array<T>): Array<T> {
+	const l = data.length / 2;
+	return data.splice(0, l);
+}
+
+getSplitedHalf<number>([1, 3, 4]);
+
+/* Необязательно писать Т, можно назвать как угодно */
+const split: <T>(data: Array<T>) => Array<T> = getSplitedHalf;
+const split2: <asd>(data: Array<asd>) => Array<asd> = getSplitedHalf;
+
+
+interface ILogLine<T> {
+  timeStamp: Date;
+  data: T
+}
+
+type LogLineType<T> = {
+  timeStamp: Date;
+  data: T
+}
+
+const logLine: ILogLine<{a: number}> | LogLineType<{a: number}>= {
+  timeStamp: new Date(),
+  data: {
+    a: 1
+  }
+}

@@ -1,30 +1,23 @@
 "use strict";
 /*
-  Написать функцию toString, которая принимает любой тип
-  и возвращает его строковое представление. Если не может, то
-  возвращает undefined
+  Использование в типах
 */
-function toString(arg) {
-    if (Array.isArray(arg)) {
-        return arg.toString();
-    }
-    switch (typeof arg) {
-        case 'string':
-            return arg;
-        case 'number':
-        case 'symbol':
-        case 'bigint':
-        case 'boolean':
-        case 'function':
-            return arg.toString();
-        case 'object':
-            return JSON.stringify(arg);
-        default:
-            return undefined;
-    }
+function logMiddleware(data) {
+    console.log(data);
+    return data;
 }
-console.log(toString(3));
-console.log(toString(true));
-console.log(toString(['a', 'b']));
-console.log(toString({ a: 1 }));
-console.log(toString('a'));
+const res = logMiddleware(10);
+function getSplitedHalf(data) {
+    const l = data.length / 2;
+    return data.splice(0, l);
+}
+getSplitedHalf([1, 3, 4]);
+/* Необязательно писать Т, можно назвать как угодно */
+const split = getSplitedHalf;
+const split2 = getSplitedHalf;
+const logLine = {
+    timeStamp: new Date(),
+    data: {
+        a: 1
+    }
+};
