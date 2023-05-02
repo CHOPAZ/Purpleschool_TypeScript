@@ -1,38 +1,22 @@
 "use strict";
 /*
-  Ограничения genreic
-
-  Нельзя рабоать с generic как с определенным типом и обращатьяс к его свойствам
+  Необходимо написать функцию сортировки любых
+  объектов, которые имеют id по убыванию и по возрастанию
 */
-class Vehicle {
+const data = [
+    { id: 2, name: 'Петя' },
+    { id: 1, name: 'Вася' },
+    { id: 3, name: 'Надя' },
+];
+function sort(data, type = 'asc') {
+    return data.sort((a, b) => {
+        switch (type) {
+            case "asc":
+                return a.id - b.id;
+            case "desc":
+                return b.id - a.id;
+        }
+    });
 }
-/* Код не работает, потомучто хотим обратится к свойству run у  универсальноого generic T  */
-function kmToMilles(vehicle) {
-    vehicle.run = vehicle.run / 0.62;
-    return vehicle;
-}
-class LCV extends Vehicle {
-}
-function kmToMilles2(vehicle) {
-    vehicle.run = vehicle.run / 0.62;
-    return vehicle;
-}
-const vehicle = kmToMilles2(new Vehicle());
-const lcv = kmToMilles2(new LCV());
-kmToMilles2({ a: 1 }); // ошибка
-kmToMilles2({ run: 1 }); // подходит под описание класса
-/* Так же можно работать с Interface */
-/*  */
-function logId(id) {
-    console.log(id);
-    return id;
-}
-/* Использование нескольких generic */
-function logId2(id, additionalDate) {
-    console.log(id);
-    console.log(additionalDate);
-    return {
-        id: id,
-        data: additionalDate
-    };
-}
+console.log(sort(data, 'desc'));
+console.log(sort(data));
