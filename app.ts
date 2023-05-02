@@ -1,39 +1,49 @@
 /*  
-  Использование в типах
+  Ограничения genreic
+
+  Нельзя рабоать с generic как с определенным типом и обращатьяс к его свойствам
 */
 
-function logMiddleware<T>(data: T): T {
-	console.log(data);
-	return data;
+class Vehicle {
+  run: number;
 }
 
-const res = logMiddleware<number>(10);
 
-function getSplitedHalf<T>(data: Array<T>): Array<T> {
-	const l = data.length / 2;
-	return data.splice(0, l);
+/* Код не работает, потомучто хотим обратится к свойству run у  универсальноого generic T  */
+function kmToMilles<T>(vehicle: T): T {
+  vehicle.run = vehicle.run / 0.62;
+  return vehicle
 }
 
-getSplitedHalf<number>([1, 3, 4]);
-
-/* Необязательно писать Т, можно назвать как угодно */
-const split: <T>(data: Array<T>) => Array<T> = getSplitedHalf;
-const split2: <asd>(data: Array<asd>) => Array<asd> = getSplitedHalf;
-
-
-interface ILogLine<T> {
-  timeStamp: Date;
-  data: T
+class LCV extends Vehicle {
+  capacity: number;
 }
 
-type LogLineType<T> = {
-  timeStamp: Date;
-  data: T
+function kmToMilles2<T extends Vehicle>(vehicle: T): T {
+  vehicle.run = vehicle.run / 0.62;
+  return vehicle
 }
 
-const logLine: ILogLine<{a: number}> | LogLineType<{a: number}>= {
-  timeStamp: new Date(),
-  data: {
-    a: 1
+const vehicle = kmToMilles2(new Vehicle());
+const lcv = kmToMilles2(new LCV());
+kmToMilles2({a: 1}) // ошибка
+kmToMilles2({run: 1}) // подходит под описание класса
+
+/* Так же можно работать с Interface */
+
+/*  */
+
+function logId<T extends string | number >(id: T): T {
+  console.log(id);
+  return id
+}
+
+/* Использование нескольких generic */
+function logId2<T extends string | number, Y >(id: T, additionalDate: Y): {id: T, data: Y} {
+  console.log(id);
+  console.log(additionalDate);
+  return {
+    id: id,
+    data: additionalDate
   }
 }

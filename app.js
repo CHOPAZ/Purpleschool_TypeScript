@@ -1,23 +1,38 @@
 "use strict";
 /*
-  Использование в типах
+  Ограничения genreic
+
+  Нельзя рабоать с generic как с определенным типом и обращатьяс к его свойствам
 */
-function logMiddleware(data) {
-    console.log(data);
-    return data;
+class Vehicle {
 }
-const res = logMiddleware(10);
-function getSplitedHalf(data) {
-    const l = data.length / 2;
-    return data.splice(0, l);
+/* Код не работает, потомучто хотим обратится к свойству run у  универсальноого generic T  */
+function kmToMilles(vehicle) {
+    vehicle.run = vehicle.run / 0.62;
+    return vehicle;
 }
-getSplitedHalf([1, 3, 4]);
-/* Необязательно писать Т, можно назвать как угодно */
-const split = getSplitedHalf;
-const split2 = getSplitedHalf;
-const logLine = {
-    timeStamp: new Date(),
-    data: {
-        a: 1
-    }
-};
+class LCV extends Vehicle {
+}
+function kmToMilles2(vehicle) {
+    vehicle.run = vehicle.run / 0.62;
+    return vehicle;
+}
+const vehicle = kmToMilles2(new Vehicle());
+const lcv = kmToMilles2(new LCV());
+kmToMilles2({ a: 1 }); // ошибка
+kmToMilles2({ run: 1 }); // подходит под описание класса
+/* Так же можно работать с Interface */
+/*  */
+function logId(id) {
+    console.log(id);
+    return id;
+}
+/* Использование нескольких generic */
+function logId2(id, additionalDate) {
+    console.log(id);
+    console.log(additionalDate);
+    return {
+        id: id,
+        data: additionalDate
+    };
+}
