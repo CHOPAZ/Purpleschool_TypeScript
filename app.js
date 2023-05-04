@@ -1,20 +1,28 @@
 "use strict";
 /*
-  Манипуляция с типами
+  Необходимо написать функцию группировки, которая принимает массив объектов
+  и его ключ, производит группировку по указанному ключу и возращает
+  сгруппированный объект.
 
-  Keyof - позволяет вытащить ключи из объекта, класса, интерфейса
 */
-const keyAge = 'age'; // может быть либо age либо name
-const keyName = 'name'; // может быть либо age либо name
-const keyB = 'd'; // ошибка
-/* Когда полезно
-  Типизация: функция с двумя generic, где T - сам объект, а К - ключ, из ключей этого объекта (Т)
-*/
-function getValue(obj, key) {
-    return obj[key];
+const data = [
+    { group: 1, name: 'a' },
+    { group: 1, name: 'b' },
+    { group: 2, name: 'c' },
+];
+function groupSort(arrData, key) {
+    return arrData.reduce((map, item) => {
+        const itemKey = item[key];
+        let curEl = map[itemKey];
+        if (Array.isArray(curEl)) {
+            curEl.push(item);
+        }
+        else {
+            curEl = [item];
+        }
+        map[itemKey] = curEl;
+        return map;
+    }, {});
 }
-const user = {
-    name: 'Vasya',
-    age: 30
-};
-const userName = getValue(user, 'name');
+const res = groupSort(data, 'group');
+console.log(res);

@@ -1,35 +1,42 @@
 /*  
-  Манипуляция с типами
+  Необходимо написать функцию группировки, которая принимает массив объектов
+  и его ключ, производит группировку по указанному ключу и возращает
+  сгруппированный объект.
 
-  Keyof - позволяет вытащить ключи из объекта, класса, интерфейса
 */
 
-interface IUser {
+interface IData {
+  group: number;
   name: string;
-  age: number
 }
 
-/* Как получить ключи? */
-type KeysOfUser = keyof IUser;
+const data: IData[] = [
+  { group: 1, name: 'a'},
+  { group: 1, name: 'b'},
+  { group: 2, name: 'c'},
+]
 
-const keyAge: KeysOfUser = 'age' // может быть либо age либо name
-const keyName: KeysOfUser = 'name' // может быть либо age либо name
-const keyB: KeysOfUser = 'd' // ошибка
-
-/* Когда полезно
-  Типизация: функция с двумя generic, где T - сам объект, а К - ключ, из ключей этого объекта (Т)
-*/
-function getValue<T, K extends keyof T>(obj: T, key: K) {
-  return obj[key]
+interface IGroup<T> {
+  [key: string]: T[]
 }
 
-const user: IUser = {
-  name: 'Vasya',
-  age: 30
+type key = string | number | symbol
+
+function groupSort<T extends Record<key, any>>(arrData: T[], key: keyof T): IGroup<T> {
+  return arrData.reduce<IGroup<T>>((map: IGroup<T>, item) => {
+    const itemKey = item[key];
+    let curEl = map[itemKey]
+    if (Array.isArray(curEl)) {
+      curEl.push(item)
+    } else {
+      curEl = [item]
+    }
+    map[itemKey] = curEl;
+    return map
+  }, {})
 }
 
-const userName = getValue(user, 'name')
-
-
+const res = groupSort<IData>(data, 'group');
+console.log(res);
 
 
