@@ -1,42 +1,40 @@
 /*  
-  Необходимо написать функцию группировки, которая принимает массив объектов
-  и его ключ, производит группировку по указанному ключу и возращает
-  сгруппированный объект.
-
+  Typeof - 
 */
 
-interface IData {
-  group: number;
-  name: string;
+/*
+  Вспомним:
+  Typeof для сужения типов, когда есть union type
+  typeof - js часть для сужения типов
+ */
+let strOrNum: string | number = 5;
+
+if ( Math.random() > 0.5) {
+  strOrNum = 5;
+} else {
+  strOrNum = 'str'
 }
 
-const data: IData[] = [
-  { group: 1, name: 'a'},
-  { group: 1, name: 'b'},
-  { group: 2, name: 'c'},
-]
-
-interface IGroup<T> {
-  [key: string]: T[]
+if (typeof strOrNum === 'string') {
+  console.log(strOrNum); //string
+} else {
+  console.log(strOrNum); //number
 }
 
-type key = string | number | symbol
+/* typeof - исключение типов, ts часть */
 
-function groupSort<T extends Record<key, any>>(arrData: T[], key: keyof T): IGroup<T> {
-  return arrData.reduce<IGroup<T>>((map: IGroup<T>, item) => {
-    const itemKey = item[key];
-    let curEl = map[itemKey]
-    if (Array.isArray(curEl)) {
-      curEl.push(item)
-    } else {
-      curEl = [item]
-    }
-    map[itemKey] = curEl;
-    return map
-  }, {})
+let str2OrNum: typeof strOrNum; //string | number
+
+const user = {
+  name: 'Vasya'
+};
+
+type keyOfUser = keyof user; //неполучится, т.к. user относится к значению, но здесь используется как тип, тип у нее не user, а - name: string
+type keyOfUser2 = keyof typeof user; // type keyOfUser2 = "name"
+
+enum Direction {
+  Up,
+  Dowm
 }
 
-const res = groupSort<IData>(data, 'group');
-console.log(res);
-
-
+type d = keyof typeof Direction;

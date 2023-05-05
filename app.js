@@ -1,28 +1,32 @@
 "use strict";
 /*
-  Необходимо написать функцию группировки, которая принимает массив объектов
-  и его ключ, производит группировку по указанному ключу и возращает
-  сгруппированный объект.
-
+  Typeof -
 */
-const data = [
-    { group: 1, name: 'a' },
-    { group: 1, name: 'b' },
-    { group: 2, name: 'c' },
-];
-function groupSort(arrData, key) {
-    return arrData.reduce((map, item) => {
-        const itemKey = item[key];
-        let curEl = map[itemKey];
-        if (Array.isArray(curEl)) {
-            curEl.push(item);
-        }
-        else {
-            curEl = [item];
-        }
-        map[itemKey] = curEl;
-        return map;
-    }, {});
+/*
+  Вспомним:
+  Typeof для сужения типов, когда есть union type
+  typeof - js часть для сужения типов
+ */
+let strOrNum = 5;
+if (Math.random() > 0.5) {
+    strOrNum = 5;
 }
-const res = groupSort(data, 'group');
-console.log(res);
+else {
+    strOrNum = 'str';
+}
+if (typeof strOrNum === 'string') {
+    console.log(strOrNum); //string
+}
+else {
+    console.log(strOrNum); //number
+}
+/* typeof - исключение типов, ts часть */
+let str2OrNum; //string | number
+const user = {
+    name: 'Vasya'
+};
+var Direction;
+(function (Direction) {
+    Direction[Direction["Up"] = 0] = "Up";
+    Direction[Direction["Dowm"] = 1] = "Dowm";
+})(Direction || (Direction = {}));
