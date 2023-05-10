@@ -1,22 +1,36 @@
 "use strict";
 /*
-  index Access Types
+  Conditional Types
 */
-const user = {
-    name: 'Vasya',
-    roles: []
+const a1 = Math.random() > 0.5 ? 1 : 0;
+const suc = {
+    code: 200,
+    data: 'done'
 };
-const nameUser = user['name'];
-/* P.s не путать  User['roles'] - работа с типами, user['name'] - работа не с типами, т.к если захотим сделать константку */
-const roleNames = 'roles';
-/* фича */
-const roles = ['admin', 'user', 'super-user'];
-/* создать тип, который является union типом между всеми элементами массива */
-const roles2 = ['admin', 'user', 'super-user']; // const roles2: readonly ["admin", "user", "super-user"]
-const user2 = {
-    name: 'Vasya',
-    roles: [],
-    permission: {
-        endDate: new Date()
+const err = {
+    code: 200,
+    data: new Error()
+};
+/* Кейсы - использование для упрощения перегрузки */
+class User {
+}
+class UserPersisted extends User {
+}
+function getUser(dbIdOrId) {
+    if (typeof dbIdOrId === 'number') {
+        return new User();
     }
-};
+    else {
+        return new UserPersisted();
+    }
+}
+function getUser2(id) {
+    if (typeof id === 'number') {
+        return new User();
+    }
+    else {
+        return new UserPersisted();
+    }
+}
+const res = getUser2(1); //const res: User
+const res2 = getUser2('asd'); //const res2: UserPersisted
