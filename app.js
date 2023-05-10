@@ -1,32 +1,22 @@
 "use strict";
 /*
-  Typeof -
+  index Access Types
 */
-/*
-  Вспомним:
-  Typeof для сужения типов, когда есть union type
-  typeof - js часть для сужения типов
- */
-let strOrNum = 5;
-if (Math.random() > 0.5) {
-    strOrNum = 5;
-}
-else {
-    strOrNum = 'str';
-}
-if (typeof strOrNum === 'string') {
-    console.log(strOrNum); //string
-}
-else {
-    console.log(strOrNum); //number
-}
-/* typeof - исключение типов, ts часть */
-let str2OrNum; //string | number
 const user = {
-    name: 'Vasya'
+    name: 'Vasya',
+    roles: []
 };
-var Direction;
-(function (Direction) {
-    Direction[Direction["Up"] = 0] = "Up";
-    Direction[Direction["Dowm"] = 1] = "Dowm";
-})(Direction || (Direction = {}));
+const nameUser = user['name'];
+/* P.s не путать  User['roles'] - работа с типами, user['name'] - работа не с типами, т.к если захотим сделать константку */
+const roleNames = 'roles';
+/* фича */
+const roles = ['admin', 'user', 'super-user'];
+/* создать тип, который является union типом между всеми элементами массива */
+const roles2 = ['admin', 'user', 'super-user']; // const roles2: readonly ["admin", "user", "super-user"]
+const user2 = {
+    name: 'Vasya',
+    roles: [],
+    permission: {
+        endDate: new Date()
+    }
+};
