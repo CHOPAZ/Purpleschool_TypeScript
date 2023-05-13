@@ -1,26 +1,52 @@
 /*  
-  Conditional Types
-
-  Infer - берет и псевдообъявляет переменную типа внутри extends
+  Mapped types
 */
-function runTransaction(transaction: {
-  fromTo: [string, string]
-}) {
-  console.log(transaction);
+type MOdifier = 'read' | 'update' | 'create';
+
+type UserRoles = {
+  customres?: MOdifier;
+  projects?: MOdifier;
+  adminPanal?: MOdifier;
 }
 
-const transaction = {
-  fromTo: ['1', '2']
+/* стандартная запись, но в случае изменения UserRoles нужно менять и UserAccess1  */
+type UserAccess1 = {
+  customres?: boolean;
+  projects?: boolean;
+  adminPanal?: boolean;
 }
 
-runTransaction(transaction)
+/*Mapped types  */
+type ModifierToAccess<Type> ={ 
+  [Property in keyof Type]: boolean // берем каждый ключ в UserRoles и оно должно соответсвовать boolean
+}
 
-/* Решение проблемы
-  T extends (first: infer First, - из first вытаскивает тип First
+type UserAccess2 = ModifierToAccess<UserRoles>
+
+/*  */
+type ModifierToAccess2<Type> ={ 
+  [Property in keyof Type]-?: boolean // -? все свойства обязательны, +? - все свойства необязательны
+}
+type UserAccess3 = ModifierToAccess2<UserRoles>
+
+/*  */
+type ModifierToAccess3<Type> ={ 
+  +readonly [Property in keyof Type]-?: boolean //+readonly - добавляем readonly ко всем типам
+}
+
+/* Переименовывание свойст */
+type ModifierToAccess4<Type> ={ 
+  +readonly [Property in keyof Type as `canAccess${string & Property}`]-?: boolean //+readonly - добавляем readonly ко всем типам
+}
+
+type UserAccess4 = ModifierToAccess4<UserRoles> /*  
+  type UserAccess4 = {
+    readonly canAccesscustomres: boolean;
+    readonly canAccessprojects: boolean;
+    readonly canAccessadminPanal: boolean;
+  } 
 */
 
-const transaction2: GetFirstArg<typeof runTransaction> = {
-  fromTo: ['1', '2']
-}
-
-type GetFirstArg<T> = T extends (first: infer First, ...args: any[]) => any ? First : never
+/* Mapped types - полезно использовать когда есть совпадающие ключи, но в объекте нужны другие значения
+  Дополнительно полезен, когде необходимо сделать какие то опциональные вещи
+*/
