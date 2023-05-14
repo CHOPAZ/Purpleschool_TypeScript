@@ -1,33 +1,28 @@
 /*  
-  Упражненеие - валидация форм.
-
-  Необходимо сделать тип для результата валидации
-  формы, основываясь на типе формы
+  Template Literal Types
 */
 
-interface IForm {
-  name: string;
-  password: string;
+type ReadOrWrite = 'read' | 'write';
+type Access = `can${ReadOrWrite}`; // type Access = "canread" | "canwrite"
+type Access2 = `can${Uppercase<ReadOrWrite>}`; // type Access2 = "canREAD" | "canWRITE"
+type Access3 = `can${Capitalize<ReadOrWrite>}`; // type Access3 = "canRead" | "canWrite"
+
+type Bulk = 'bulk' | '';
+type Access4 = `can${Capitalize<ReadOrWrite>}${Capitalize<Bulk>}`; //type Access4 = "canRead" | "canWrite" | "canReadBulk" | "canWriteBulk"
+
+
+/*  */
+type ErrorOrSuccess = 'error' | 'success';
+interface ResponceT {
+  result: `http${Capitalize<ErrorOrSuccess>}`
 }
 
-const form: IForm = {
-  name: 'Vasya',
-  password: '123'
-}
+const a: ResponceT = {
+  result: 'httpError'
+};
 
 
-/* результат валидации */
-const formValidation: Validation<IForm> = {
-  name: {
-    isValid: true
-  },
-  password: {
-    isValid: false,
-    erroeMessage: 'Должен содержвать длиннее 5 символов'
-  }
-}
+/* Обратно распокавать составной тип */
 
-type Validation<T> = {
-  [key in keyof T]: {isValid: true} | {isValid: false, erroeMessage: string}
-}
-
+type ReadOrWriteBulk<T> = T extends `can${infer R}` ? R : never;
+type T = ReadOrWriteBulk<Access4>; //type T = "Read" | "Write" | "ReadBulk" | "WriteBulk"
