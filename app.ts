@@ -1,61 +1,40 @@
 /*  
   Служебные типы
 
-  Partial,
-  Required, -   все эти типы содержат под капотом Mapped Types, если провалиться внутрь описания то увидем следующееЭ
-  Readonly
+  Pick - берет только необходимое
+  Omit - убирает ненужные ключи ,
 
-  Partial -  type Partial<T> = {
-    [P in keyof T]?: T[P];
-  };
-
-  Required - type Required<T> = {
-    [P in keyof T]-?: T[P];
-  };
-
-  Readonly - type Readonly<T> = {
-    readonly [P in keyof T]: T[P];
-  };
+  Extract
+  Exclude
 */
 
-interface User {
-  name: string;
-  age?: number;
-  email: string;
+interface PaymentPersistent {
+  id: number;
+  sum: number;
+  from: string;
+  to: string
 }
-/* Partial - используется не так часто, необходимость его следетелствует о необходимости  отдельного типа, либо нет необходимости что то типизировать и выкинуть часть савойст */
-/* использовать User как interface, но сделать поля не обязательными */
-type partial = Partial<User>; /* 
-  type p = {
-    name?: string | undefined;
-    age?: number | undefined;
-    email?: string | undefined;
-}
-*/
-const p: partial = {}
 
-
-/* Required - делает поля обязательными */
-type required = Required<User>; /* 
-  type required = {
-    name: string;
-    age: number; - age стал обязательным
-    email: string;
-}
+type PaymentOmit = Omit<PaymentPersistent, 'id'>; /* 
+  type PaymentOmit = {
+    sum: number;
+    from: string;
+    to: string;
+  }
 */
 
-/* Readonly -  */
-type readonly = Readonly<User>; /* 
-  type readonly = {
-    readonly name: string;
-    readonly age?: number | undefined;
-    readonly email: string;
-}
+type PaymentPick = Pick<PaymentPersistent, 'from' | 'to'>; /* 
+  type PaymentPick = {
+    id: number;
+  }
 */
-type requiredAndReadonly = Required<Readonly<User>>; /* 
-  type requiredAndReadonly = {
-    readonly name: string;
-    readonly age: number;
-    readonly email: string;
-}
+
+
+type ExtractEx = Extract<'from' | 'to' | PaymentOmit, string>; //type ExtractEx = "from" | "to"
+type ExcludeEx = Exclude<'from' | 'to' | PaymentOmit, string>; /* 
+  type ExcludeEx = {
+    sum: number;
+    from: string;
+    to: string;
+  }
 */
