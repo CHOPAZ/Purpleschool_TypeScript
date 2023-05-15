@@ -2,9 +2,14 @@
 /*
   Служебные типы
 
-  Pick - берет только необходимое
-  Omit - убирает ненужные ключи ,
-
-  Extract
-  Exclude
+  ReturnType, Parameters, ConstructorParameters
 */
+class User {
+    constructor(id, name) {
+        this.id = id;
+        this.name = name;
+    }
+}
+function getData(id) {
+    return new User(id, 'Vasya');
+}
