@@ -1,30 +1,46 @@
 /*  
   Служебные типы
 
-  ReturnType, Parameters, ConstructorParameters
+  Awaited - представлен в 4.5
 */
 
-class User { 
-  constructor(public id: number, public name: string) {
+type A = Awaited<Promise<string>>; //type A = string
+type A2 = Awaited<Promise<Promise<string>>>
 
-  }
+/* Реализация под капотом
 
+  type Awaited<T> =
+    T extends null | undefined ? T : // special case for `null | undefined` when not in `--strictNullChecks` mode
+        T extends object & { then(onfulfilled: infer F, ...args: infer _): any } ? // `await` only unwraps object types with a callable `then`. Non-object types are not unwrapped
+            F extends ((value: infer V, ...args: infer _) => any) ? // if the argument to `then` is callable, extracts the first argument
+                Awaited<V> : // recursively unwrap the value
+                never : // the argument to `then` was not callable
+        T; // non-object or non-thenable
+
+
+*/
+
+/* Кейсы */
+interface IMenu {
+  name: string;
+  url: string;
 }
 
-function getData(id: number): User {
-  return new User(id, 'Vasya')
+async function getMenu(): Promise<IMenu[]> {
+  return [{ name: 'Аналитика', url: 'analytics'}];
 }
 
-/* ReturnType - позволяет удобно получить тип возвращаемой функции и т.д. Полезен когда нельзя явно понять что вернули */
-type RT = ReturnType<typeof getData>; //type RT = User
-type RT2 = ReturnType<() => void>; //type RT2 = void
-type RT3 = ReturnType<<T>() => T>; //type RT3 = unknown - потому что не знаем заранее что будет передано в Т;
-type RT4 = ReturnType<<T extends string>() => T>;//type RT4 = string
+type R = ReturnType<typeof getMenu>; //type R = Promise<IMenu[]>
+type R2 = Awaited<ReturnType<typeof getMenu>>; //type R = IMenu[]
 
-/* Parameters */
-type PT = Parameters<typeof getData>; //type PT = [id: number];
-type first = PT[0];// type first = number
-type PT2 = Parameters<typeof getData>[0]; //type first = number
+/* Читабельность типов */
 
-/* Получение входящие параметры в классе */
-type CP = ConstructorParameters<typeof User>; //type CP = [id: number, name: string]
+/* x - какая то функция, которую можем эвейтить */
+async function getArra<T>(x:T): Promise<Awaited<T>[]> {
+  return [await x];
+}
+
+/* старая типизация */
+async function getArra2<T>(x:T): Promise<T[]> {
+  return [await x];
+}
