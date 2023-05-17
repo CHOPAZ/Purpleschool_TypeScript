@@ -1,46 +1,34 @@
 /*  
-  Служебные типы
+  Декораторы - паттерн, функция
 
-  Awaited - представлен в 4.5
+  Декораторы позволяют добавить синтекс для аннотаций и мета программированию в TS для классов, методов свойст или параметров методов.
+
+  Запись декоратора: @Название (@Component)
+
+  Как только пишется декоратор, информация(метаинформация) о классе или и т.д. переходит в некую логику. В рамках этой логики можно модифицировать объект, выполнить доп действия.
+
+  Виды декораторов:
+  1. Декоратор класса: @Component
+  2. Декоратор свойств: @Prop
+  3. Декоратор метода: @Method
+  4. Декоратор параметра: @Param 
+  
+  Порядок исполнения:
+  1. Декораторы на одном классе выполняются в обратном порядке (снизу вверх)
+  2. Декораторы свойст, метода, параметра сверху вниз
 */
 
-type A = Awaited<Promise<string>>; //type A = string
-type A2 = Awaited<Promise<Promise<string>>>
+function Component() {
 
-/* Реализация под капотом
-
-  type Awaited<T> =
-    T extends null | undefined ? T : // special case for `null | undefined` when not in `--strictNullChecks` mode
-        T extends object & { then(onfulfilled: infer F, ...args: infer _): any } ? // `await` only unwraps object types with a callable `then`. Non-object types are not unwrapped
-            F extends ((value: infer V, ...args: infer _) => any) ? // if the argument to `then` is callable, extracts the first argument
-                Awaited<V> : // recursively unwrap the value
-                never : // the argument to `then` was not callable
-        T; // non-object or non-thenable
-
-
-*/
-
-/* Кейсы */
-interface IMenu {
-  name: string;
-  url: string;
 }
 
-async function getMenu(): Promise<IMenu[]> {
-  return [{ name: 'Аналитика', url: 'analytics'}];
-}
+@Component
+export class A {
+  @Prop
+  myName: string
 
-type R = ReturnType<typeof getMenu>; //type R = Promise<IMenu[]>
-type R2 = Awaited<ReturnType<typeof getMenu>>; //type R = IMenu[]
-
-/* Читабельность типов */
-
-/* x - какая то функция, которую можем эвейтить */
-async function getArra<T>(x:T): Promise<Awaited<T>[]> {
-  return [await x];
-}
-
-/* старая типизация */
-async function getArra2<T>(x:T): Promise<T[]> {
-  return [await x];
+  @Method
+  setName(@Param name: string) {
+    this.myName = name
+  }
 }
