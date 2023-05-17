@@ -1,34 +1,37 @@
 /*  
-  Декораторы - паттерн, функция
-
-  Декораторы позволяют добавить синтекс для аннотаций и мета программированию в TS для классов, методов свойст или параметров методов.
-
-  Запись декоратора: @Название (@Component)
-
-  Как только пишется декоратор, информация(метаинформация) о классе или и т.д. переходит в некую логику. В рамках этой логики можно модифицировать объект, выполнить доп действия.
-
-  Виды декораторов:
-  1. Декоратор класса: @Component
-  2. Декоратор свойств: @Prop
-  3. Декоратор метода: @Method
-  4. Декоратор параметра: @Param 
-  
-  Порядок исполнения:
-  1. Декораторы на одном классе выполняются в обратном порядке (снизу вверх)
-  2. Декораторы свойст, метода, параметра сверху вниз
+  Паттерн декоратора - декораторы которые будут дальше ( в некст уроках), это компактная реализация паттерна декоратора
+  Паттерн декоратора - позволяет обернуть объект или др. в некотурую функцию, которая модифицирует его поведение, при этом можно делать целую композицию из декораторов
 */
 
-function Component() {
-
+/* Пример */
+interface IUserService {
+  users: number;
+  getUsersInDatabase(): number;
 }
 
-@Component
-export class A {
-  @Prop
-  myName: string
-
-  @Method
-  setName(@Param name: string) {
-    this.myName = name
+class UserService implements IUserService {
+  users: number = 1000;
+  getUsersInDatabase(): number {
+    return this.users;
   }
+  
 }
+
+function nullUser(obj: IUserService) {
+  obj.users = 0;
+  return obj
+}
+
+function logUsers(obj: IUserService) {
+  console.log('Users' + obj.users);
+  return obj
+}
+
+console.log(new UserService().getUsersInDatabase()); //1000
+console.log(nullUser(new UserService()).getUsersInDatabase()); //обернули (задекарировали) - получим 0
+console.log(logUsers(nullUser(new UserService())).getUsersInDatabase()); //обернули (задекарировали) - получим Users0 и 0
+console.log(nullUser(logUsers(new UserService())).getUsersInDatabase()); //обернули (задекарировали) - получим Users1000 и 0
+
+/* PS
+  Паттерн декоратора, который реализовали на функциях, можно реалезовать так же на классах
+*/
