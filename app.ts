@@ -1,6 +1,5 @@
 /*  
-  Паттерн декоратора - декораторы которые будут дальше ( в некст уроках), это компактная реализация паттерна декоратора
-  Паттерн декоратора - позволяет обернуть объект или др. в некотурую функцию, которая модифицирует его поведение, при этом можно делать целую композицию из декораторов
+  Декоратор класса
 */
 
 /* Пример */
@@ -9,6 +8,8 @@ interface IUserService {
   getUsersInDatabase(): number;
 }
 
+@nullUser
+@threeUserAdvanced
 class UserService implements IUserService {
   users: number = 1000;
   getUsersInDatabase(): number {
@@ -17,21 +18,25 @@ class UserService implements IUserService {
   
 }
 
-function nullUser(obj: IUserService) {
-  obj.users = 0;
-  return obj
-}
-
-function logUsers(obj: IUserService) {
-  console.log('Users' + obj.users);
-  return obj
+function nullUser(target: Function) {
+  target.prototype.users = 0;
 }
 
 console.log(new UserService().getUsersInDatabase()); //1000
-console.log(nullUser(new UserService()).getUsersInDatabase()); //обернули (задекарировали) - получим 0
-console.log(logUsers(nullUser(new UserService())).getUsersInDatabase()); //обернули (задекарировали) - получим Users0 и 0
-console.log(nullUser(logUsers(new UserService())).getUsersInDatabase()); //обернули (задекарировали) - получим Users1000 и 0
 
-/* PS
-  Паттерн декоратора, который реализовали на функциях, можно реалезовать так же на классах
+/* ^ Получили 1000, а хотели 0
+  Потому что function nullUser выполняется еще на этапе компиляции приложения, а потом класс UserService
+  Если у класса уббрать присвоение 1000, т.е users: number; то тогда бы получили 0
 */
+
+/* Иная запись декоратора
+  Вместо модификации прототипа класса, модифицировать поведение класса отнаследовавшись от исходного класса, которыйц декорируем
+*/
+
+function threeUserAdvanced<T extends {new(...args: any[]): {}}>(constructors: T) {
+  return class extends constructors {
+    users = 3;
+  }
+}
+
+/* threeUserAdvanced - некоторый конструированный класс, не функция, и от этого класса будем наследоваться анонимным классом, где применяем поведение */
