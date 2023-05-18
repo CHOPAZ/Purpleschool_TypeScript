@@ -1,71 +1,34 @@
 /*  
-  Фабрика декораторов
+  Упражнение - Декоратор CreatedAt
+
+  Декоратор, кторый добавляет свойство
+  createdAt в класс, фиксируя дату создания
 */
 
-/* Пример */
 interface IUserService {
   users: number;
   getUsersInDatabase(): number;
 }
-
-/* Порядок вызова декораторов */
-// @nullUser
-@setUser(10)
-// @threeUserAdvanced
-// @setUserAdvanced(4)
-@log()
-class UserService implements IUserService {
+@CreatedAt
+class Userservice implements IUserService {
   users: number = 1000;
   getUsersInDatabase(): number {
     return this.users;
   }
-  
 }
 
-function nullUser(target: Function) {
-  target.prototype.users = 0;
-}
-
-/* Необходимо вместо 0 установить определенное число пользователей */
-function setUser(users: number) {
-  console.log('setUsers init');
-  return (target: Function) => {
-    console.log('setUsers run');
-    target.prototype.users = users;
+function CreatedAt<T extends { new (...args: any[]): {}}>(constructor: T) {
+  return class extends constructor {
+    createdAt = new Date()
   }
 }
 
-function log() {
-  console.log('log init');
-  return (target: Function) => {
-    console.log('log run');
-  }
+
+console.log(new Userservice()); //Userservice { users: 1000, createdAt: 2023-05-18T17:13:43.959Z } - декоратор написан верно
+// console.log(new Userservice().createdAt); // не сможем обратиться к createdAt, потому что наличие декораторов на классах никак не влияет на типы класса. Userservice класс типа IUserService, и у него нет createdAt 
+
+/* подход - дополнительный тип*/
+type CreatedAt = {
+  createdAt: Date
 }
-
-/* вызов SetUser как декоратор ^ */
-
-console.log(new UserService().getUsersInDatabase()); //1000
-/* ^ Получили 1000, а хотели 0
-  Потому что function nullUser выполняется еще на этапе компиляции приложения, а потом класс UserService
-  Если у класса уббрать присвоение 1000, т.е users: number; то тогда бы получили 0
-*/
-
-/* Иная запись декоратора
-  Вместо модификации прототипа класса, модифицировать поведение класса отнаследовавшись от исходного класса, которыйц декорируем
-*/
-
-function threeUserAdvanced<T extends {new(...args: any[]): {}}>(constructors: T) {
-  return class extends constructors {
-    users = 3;
-  }
-}
-
-/* необходимо вместо 3 установить определенное число пользователей */
-function setUserAdvanced(users: number) {
-  return <T extends {new(...args: any[]): {}}>(constructors: T) => {
-    return class extends constructors {
-      users = users;
-    }
-  }
-}
-/* threeUserAdvanced - некоторый конструированный класс, не функция, и от этого класса будем наследоваться анонимным классом, где применяем поведение */
+console.log((new Userservice() as IUserService & CreatedAt).createdAt);
