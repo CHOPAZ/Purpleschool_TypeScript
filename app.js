@@ -1,9 +1,6 @@
 "use strict";
 /*
-  Упражнение - Декоратор CreatedAt
-
-  Декоратор, кторый добавляет свойство
-  createdAt в класс, фиксируя дату создания
+  Декоратор метода
 */
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -11,24 +8,39 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-let Userservice = class Userservice {
+class Userservice {
     constructor() {
         this.users = 1000;
     }
     getUsersInDatabase() {
-        return this.users;
+        throw new Error('Ошибка');
     }
-};
-Userservice = __decorate([
-    CreatedAt
-], Userservice);
-function CreatedAt(constructor) {
-    return class extends constructor {
-        constructor() {
-            super(...arguments);
-            this.createdAt = new Date();
-        }
+}
+__decorate([
+    Log
+], Userservice.prototype, "getUsersInDatabase", null);
+function Log(target, //объект к которому относится метод
+propertyKey, // название метода getUsersInDatabase
+descriptor //
+) {
+    console.log(target);
+    console.log(propertyKey);
+    console.log(descriptor);
+    /* переопдееление  descriptor*/
+    descriptor.value = () => {
+        console.log('no Error');
     };
 }
-console.log(new Userservice()); //Userservice { users: 1000, createdAt: 2023-05-18T17:13:43.959Z } - декоратор написан верно
-console.log(new Userservice().createdAt);
+/* Вывод в консоле
+
+  {} - target
+getUsersInDatabase - propertyKey
+{
+  value: [Function: getUsersInDatabase], - сама фукнция которая кидает ошибюку
+  writable: true, - параметр, означающий что значение свойства можно менять
+  enumerable: false, - если true, то свойство участвует в перечеслении когда например проходим for in
+  configurable: true - свойство можно удалять, менять при далнейших вызовах
+}
+*/
+console.log(new Userservice().getUsersInDatabase());
+/* Декоратор меняющий метод */
