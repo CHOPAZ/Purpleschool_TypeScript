@@ -1,5 +1,5 @@
 /*  
-  Декоратор метода
+  Упражнение - Декоратор перехвата ошибок
 */
 
 interface IUserService {
@@ -10,37 +10,36 @@ interface IUserService {
 class Userservice implements IUserService {
   users: number = 1000;
 
-  @Log
+  @Catch({rethrow: true})
   getUsersInDatabase(): number {
     throw new Error('Ошибка')
   }
 }
 
-function Log(
-  target: Object, //объект к которому относится метод
-  propertyKey: string | symbol, // название метода getUsersInDatabase
-  descriptor: TypedPropertyDescriptor<(...args: any[]) => any> //
-): TypedPropertyDescriptor<(...args: any[]) => any> | void {
-  console.log(target);
-  console.log(propertyKey);
-  console.log(descriptor);
-  /* переопдееление  descriptor*/
-  descriptor.value = () => {
-    console.log('no Error');
+function Catch({rethrow}: {rethrow: boolean} = {rethrow: false}) { 
+  return (
+    target: Object, //объект к которому относится метод
+    _: string | symbol, // название метода getUsersInDatabase
+    descriptor: TypedPropertyDescriptor<(...args: any[]) => any> //
+  ): TypedPropertyDescriptor<(...args: any[]) => any> | void => {
+    const method = descriptor.value;
+
+    /* переопдееление  descriptor*/
+    descriptor.value = async (...args: any[]) => {
+      try {
+        const res = await method?.apply(target, args);
+        return res;
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log(error.message);
+          if (rethrow) {
+            throw error;
+          }
+        }
+      }
+    }
   }
 }
-
-/* Вывод в консоле
-
-  {} - target
-getUsersInDatabase - propertyKey
-{
-  value: [Function: getUsersInDatabase], - сама фукнция которая кидает ошибюку
-  writable: true, - параметр, означающий что значение свойства можно менять
-  enumerable: false, - если true, то свойство участвует в перечеслении когда например проходим for in
-  configurable: true - свойство можно удалять, менять при далнейших вызовах
-}
-*/
 
 console.log(new Userservice().getUsersInDatabase());
 
