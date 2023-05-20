@@ -1,5 +1,5 @@
 /*  
-  Упражнение - Декоратор перехвата ошибок
+  Декоратор свойст
 */
 
 interface IUserService {
@@ -8,39 +8,45 @@ interface IUserService {
 }
 
 class Userservice implements IUserService {
-  users: number = 1000;
+  @Max(100)
+  users: number;
 
-  @Catch({rethrow: true})
   getUsersInDatabase(): number {
     throw new Error('Ошибка')
   }
 }
 
-function Catch({rethrow}: {rethrow: boolean} = {rethrow: false}) { 
-  return (
-    target: Object, //объект к которому относится метод
-    _: string | symbol, // название метода getUsersInDatabase
-    descriptor: TypedPropertyDescriptor<(...args: any[]) => any> //
-  ): TypedPropertyDescriptor<(...args: any[]) => any> | void => {
-    const method = descriptor.value;
+/*  */
 
-    /* переопдееление  descriptor*/
-    descriptor.value = async (...args: any[]) => {
-      try {
-        const res = await method?.apply(target, args);
-        return res;
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log(error.message);
-          if (rethrow) {
-            throw error;
-          }
-        }
+function Max(max: number) { 
+  return (
+    target: Object, //Userservice
+    properyKey: string | symbol, // users
+  ) => {
+    let value: number;
+    const setter = function(newValue: number) {
+      if (newValue > max) {
+        console.log(`Нельзя установить значение больше ${max}`);
+      } else {
+        value = newValue
       }
     }
+
+    const getter = function() {
+      return value;
+    }
+
+    Object.defineProperty(target, properyKey, {
+      set: setter,
+      get: getter
+    })
   }
 }
 
-console.log(new Userservice().getUsersInDatabase());
+const userservice = new Userservice();
+userservice.users= 1
+console.log(userservice.users);
+userservice.users = 1000;
+console.log(userservice.users)
 
 

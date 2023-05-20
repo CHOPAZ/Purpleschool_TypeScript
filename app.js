@@ -1,6 +1,6 @@
 "use strict";
 /*
-  Упражнение - Декоратор перехвата ошибок
+  Декоратор свойст
 */
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -8,47 +8,38 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 class Userservice {
-    constructor() {
-        this.users = 1000;
-    }
     getUsersInDatabase() {
         throw new Error('Ошибка');
     }
 }
 __decorate([
-    Catch({ rethrow: true })
-], Userservice.prototype, "getUsersInDatabase", null);
-function Catch({ rethrow } = { rethrow: false }) {
-    return (target, //объект к которому относится метод
-    _, // название метода getUsersInDatabase
-    descriptor //
-    ) => {
-        const method = descriptor.value;
-        /* переопдееление  descriptor*/
-        descriptor.value = (...args) => __awaiter(this, void 0, void 0, function* () {
-            try {
-                const res = yield (method === null || method === void 0 ? void 0 : method.apply(target, args));
-                return res;
+    Max(100)
+], Userservice.prototype, "users", void 0);
+/*  */
+function Max(max) {
+    return (target, //Userservice
+    properyKey) => {
+        let value;
+        const setter = function (newValue) {
+            if (newValue > max) {
+                console.log(`Нельзя установить значение больше ${max}`);
             }
-            catch (error) {
-                if (error instanceof Error) {
-                    console.log(error.message);
-                    if (rethrow) {
-                        throw error;
-                    }
-                }
+            else {
+                value = newValue;
             }
+        };
+        const getter = function () {
+            return value;
+        };
+        Object.defineProperty(target, properyKey, {
+            set: setter,
+            get: getter
         });
     };
 }
-console.log(new Userservice().getUsersInDatabase());
+const userservice = new Userservice();
+userservice.users = 1;
+console.log(userservice.users);
+userservice.users = 1000;
+console.log(userservice.users);
