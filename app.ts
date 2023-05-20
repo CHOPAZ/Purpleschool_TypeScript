@@ -1,52 +1,41 @@
 /*  
-  Декоратор accessor
+  Декоратор параметра
 */
 
 interface IUserService {
-  users: number;
   getUsersInDatabase(): number;
 }
 
 class Userservice implements IUserService {
   private _users: number;
 
-  @Log()
-  set users(num: number) {
-    this._users = num;
-  }
 
-  get users() {
+  getUsersInDatabase(): number {
     return this._users
   }
 
-  getUsersInDatabase(): number {
-    throw new Error('Ошибка')
+  setUsersInDatabase(@Positive() num: number, @Positive() num2: number): void {
+    this._users = num
   }
 }
 
 /* Декоратор для set и get */
 
-function Log() { 
+function Positive() { 
   return (
-    target: Object, 
-    _: string | symbol, 
-    descriptor: PropertyDescriptor
+    target: Object, //userservice
+    propertyKey: string | symbol, //setUsersInDatabase
+    parametrIndex: number //укажет на каком месте находится num
   ) => {
-    const oldSet = descriptor.set;
-    descriptor.set = (...args: any) => {
-      console.log(args);
-      oldSet?.apply(target, args)
-    }
+    console.log(target); //{}
+    console.log(propertyKey); //setUsersInDatabase
+    console.log(parametrIndex); //0
   }
 }
 
 const userservice = new Userservice();
-userservice.users = 2
-console.log(userservice.users); //[ 1 ] 1
 
-/* если переместим декоратор на get users() - ничего не изменится и выведется [ 1 ] 1
-  но декоратор нельзя поставить сразу и на set  и на get
-*/
+
 
 
 
