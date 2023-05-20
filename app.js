@@ -1,6 +1,6 @@
 "use strict";
 /*
-  Декоратор свойст
+  Декоратор accessor
 */
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -9,37 +9,32 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 class Userservice {
+    set users(num) {
+        this._users = num;
+    }
+    get users() {
+        return this._users;
+    }
     getUsersInDatabase() {
         throw new Error('Ошибка');
     }
 }
 __decorate([
-    Max(100)
-], Userservice.prototype, "users", void 0);
-/*  */
-function Max(max) {
-    return (target, //Userservice
-    properyKey) => {
-        let value;
-        const setter = function (newValue) {
-            if (newValue > max) {
-                console.log(`Нельзя установить значение больше ${max}`);
-            }
-            else {
-                value = newValue;
-            }
+    Log()
+], Userservice.prototype, "users", null);
+/* Декоратор для set и get */
+function Log() {
+    return (target, _, descriptor) => {
+        const oldSet = descriptor.set;
+        descriptor.set = (...args) => {
+            console.log(args);
+            oldSet === null || oldSet === void 0 ? void 0 : oldSet.apply(target, args);
         };
-        const getter = function () {
-            return value;
-        };
-        Object.defineProperty(target, properyKey, {
-            set: setter,
-            get: getter
-        });
     };
 }
 const userservice = new Userservice();
-userservice.users = 1;
-console.log(userservice.users);
-userservice.users = 1000;
-console.log(userservice.users);
+userservice.users = 2;
+console.log(userservice.users); //[ 1 ] 1
+/* если переместим декоратор на get users() - ничего не изменится и выведется [ 1 ] 1
+  но декоратор нельзя поставить сразу и на set  и на get
+*/

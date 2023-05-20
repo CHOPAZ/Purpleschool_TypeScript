@@ -1,5 +1,5 @@
 /*  
-  Декоратор свойст
+  Декоратор accessor
 */
 
 interface IUserService {
@@ -8,45 +8,45 @@ interface IUserService {
 }
 
 class Userservice implements IUserService {
-  @Max(100)
-  users: number;
+  private _users: number;
+
+  @Log()
+  set users(num: number) {
+    this._users = num;
+  }
+
+  get users() {
+    return this._users
+  }
 
   getUsersInDatabase(): number {
     throw new Error('Ошибка')
   }
 }
 
-/*  */
+/* Декоратор для set и get */
 
-function Max(max: number) { 
+function Log() { 
   return (
-    target: Object, //Userservice
-    properyKey: string | symbol, // users
+    target: Object, 
+    _: string | symbol, 
+    descriptor: PropertyDescriptor
   ) => {
-    let value: number;
-    const setter = function(newValue: number) {
-      if (newValue > max) {
-        console.log(`Нельзя установить значение больше ${max}`);
-      } else {
-        value = newValue
-      }
+    const oldSet = descriptor.set;
+    descriptor.set = (...args: any) => {
+      console.log(args);
+      oldSet?.apply(target, args)
     }
-
-    const getter = function() {
-      return value;
-    }
-
-    Object.defineProperty(target, properyKey, {
-      set: setter,
-      get: getter
-    })
   }
 }
 
 const userservice = new Userservice();
-userservice.users= 1
-console.log(userservice.users);
-userservice.users = 1000;
-console.log(userservice.users)
+userservice.users = 2
+console.log(userservice.users); //[ 1 ] 1
+
+/* если переместим декоратор на get users() - ничего не изменится и выведется [ 1 ] 1
+  но декоратор нельзя поставить сразу и на set  и на get
+*/
+
 
 
