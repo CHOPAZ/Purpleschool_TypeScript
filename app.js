@@ -1,8 +1,6 @@
 "use strict";
 /*
-  Метаданные
-
-  Фактически перенос типов из ts в js в рантайме
+   Порядок декораторов
 */
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -16,55 +14,63 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-require("reflect-metadata");
-const POSITIVE_METADATA_KEY = Symbol('POSITIVE_METADATA_KEY');
-class Userservice {
-    getUsersInDatabase() {
-        return this._users;
-    }
-    setUsersInDatabase(num) {
-        this._users = num;
-    }
+/* Универсальный дкеоратор */
+function Uni(name) {
+    console.log(`Инициализация: ${name}`);
+    return function () {
+        console.log(`Вызов: ${name}`);
+    };
 }
+let MyClass = class MyClass {
+    method(_) {
+    }
+    static method2(_) {
+    }
+    constructor(_) {
+    }
+};
 __decorate([
-    Validate(),
-    __param(0, Positive()),
+    Uni('Свойство'),
+    __metadata("design:type", Object)
+], MyClass.prototype, "props", void 0);
+__decorate([
+    Uni('Method'),
+    __param(0, Uni('Параметр method')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], Userservice.prototype, "setUsersInDatabase", null);
-/* Декоратор для set и get */
-function Positive() {
-    return (target, //userservice
-    propertyKey, //setUsersInDatabase
-    parametrIndex //укажет на каком месте находится num
-    ) => {
-        console.log(Reflect.getOwnMetadata('design:type', target, propertyKey)); //[Function: Function] - метод класса
-        console.log(Reflect.getOwnMetadata('design:paramtypes', target, propertyKey)); //[ [Function: Number] ]
-        console.log(Reflect.getOwnMetadata('design:returntype', target, propertyKey)); //undefined - потому что ничего  не возвращаем в методе
-        /* Можно глобально в методанные, конкретному объекту добавить какие то свойства  */
-        let existParams = Reflect.getOwnMetadata(POSITIVE_METADATA_KEY, target, propertyKey) || [];
-        existParams.push(parametrIndex);
-        Reflect.defineMetadata(POSITIVE_METADATA_KEY, existParams, target, propertyKey);
-    };
-}
-function Validate() {
-    return (target, propertyKey, descriptor) => {
-        let method = descriptor.value;
-        descriptor.value = function (...args) {
-            let positiveParams = Reflect.getOwnMetadata(POSITIVE_METADATA_KEY, target, propertyKey);
-            if (positiveParams) {
-                for (let index of positiveParams) {
-                    if (args[index] < 0) {
-                        throw new Error('число дольжно быть больше 0');
-                    }
-                }
-            }
-            return method === null || method === void 0 ? void 0 : method.apply(this, args);
-        };
-    };
-}
-const userservice = new Userservice();
-console.log(userservice.setUsersInDatabase(10));
-console.log(userservice.setUsersInDatabase(-1));
+], MyClass.prototype, "method", null);
+__decorate([
+    Uni('Свойство static'),
+    __metadata("design:type", Object)
+], MyClass, "props2", void 0);
+__decorate([
+    Uni('Method static'),
+    __param(0, Uni('Параметр method static')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], MyClass, "method2", null);
+MyClass = __decorate([
+    Uni('Класс'),
+    __param(0, Uni('Параметр constructor')),
+    __metadata("design:paramtypes", [Object])
+], MyClass);
+/*
+  Инициализация: Свойство
+  Вызов: Свойство
+  Инициализация: Method
+  Инициализация: Параметр method
+  Вызов: Параметр method
+  Вызов: Method
+  Инициализация: Свойство static
+  Вызов: Свойство static
+  Инициализация: Method static
+  Инициализация: Параметр method static
+  Вызов: Параметр method static
+  Вызов: Method static
+  Инициализация: Класс
+  Инициализация: Параметр constructor
+  Вызов: Параметр constructor
+  Вызов: Класс
+*/ 
