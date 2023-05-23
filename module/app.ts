@@ -1,5 +1,5 @@
 /*  
   Компилятор TS
 
-  Вывод компиляции
+  Language and Environment
 */
