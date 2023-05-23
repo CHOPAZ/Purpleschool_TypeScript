@@ -26,10 +26,12 @@
 
     /* Modules */
     "module": "commonjs",                                /* Specify what module code is generated. */
-    // "rootDir": "./",                                  /* Specify the root folder within your source files. */
+    "rootDir": "./src/",                                  /* Specify the root folder within your source files. Где находится текущий проект*/
     // "moduleResolution": "node10",                     /* Specify how TypeScript looks up a file from a given module specifier. */
-    // "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */
-    // "paths": {},                                      /* Specify a set of entries that re-map imports to additional lookup locations. */
+    "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. Базовый путь для resolve module. Комбинируется с paths: {} */
+    "paths": {
+      "@lib": ["./lib/my-lib/"]
+    },                                      /* Specify a set of entries that re-map imports to additional lookup locations. Позволяет создать доп алиасы */
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
     // "types": [],                                      /* Specify type package names to be included without being referenced in a source file. */

@@ -1,5 +1,5 @@
 /*  
   Компилятор TS
 
-  Language and Environment
+  Модули
 */
