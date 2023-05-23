@@ -49,17 +49,17 @@
     // "maxNodeModuleJsDepth": 1,                        /* Specify the maximum folder depth used for checking JavaScript files from 'node_modules'. Only applicable with 'allowJs'. */
 
     /* Emit */
-    // "declaration": true,                              /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
-    // "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
-    // "emitDeclarationOnly": true,                      /* Only output d.ts files and not JavaScript files. */
-    // "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
-    // "inlineSourceMap": true,                          /* Include sourcemap files inside the emitted JavaScript. */
+    // "declaration": true,                              /* Generate .d.ts files from TypeScript and JavaScript files in your project. d.ts файлы, которые содержат декларации типов и интерфейсов, на которых потом мы можем базироваться, например кусочек бибилиотеке*/
+    // "declarationMap": true,                           /* Create sourcemaps for d.ts files. Связь d.ts файлов и ts файлов */
+    // "emitDeclarationOnly": true,                      /* Only output d.ts files and not JavaScript files.  */
+    // "sourceMap": true,                                /* Create source map files for emitted JavaScript files. Связывает ts с js файлом. Добавляет доп файл .js.map*/
+    // "inlineSourceMap": true,                          /* Include sourcemap files inside the emitted JavaScript. Добавляет комментарий вместо файла в js файле*/
     // "outFile": "./",                                  /* Specify a file that bundles all outputs into one JavaScript file. If 'declaration' is true, also designates a file that bundles all .d.ts output. */
-    // "outDir": "./",                                   /* Specify an output folder for all emitted files. */
-    // "removeComments": true,                           /* Disable emitting comments. */
-    // "noEmit": true,                                   /* Disable emitting files from a compilation. */
+    "outDir": "./build/",                                   /* Specify an output folder for all emitted files. */
+    // "removeComments": true,                           /* Disable emitting comments. Убирает комменты из скомплелированного js файла */
+    // "noEmit": true,                                   /* Disable emitting files from a compilation. Позволяет не имитить файлы из компиляции */
     // "importHelpers": true,                            /* Allow importing helper functions from tslib once per project, instead of including them per-file. */
-    // "importsNotUsedAsValues": "remove",               /* Specify emit/checking behavior for imports that are only used for types. */
+    // "importsNotUsedAsValues": "remove",               /* Specify emit/checking behavior for imports that are only used for types. Если есть импорты типов, то он будет удаляться */
     // "downlevelIteration": true,                       /* Emit more compliant, but verbose and less performant JavaScript for iteration. */
     // "sourceRoot": "",                                 /* Specify the root path for debuggers to find the reference source code. */
     // "mapRoot": "",                                    /* Specify the location where debugger should locate map files instead of generated locations. */
@@ -67,8 +67,8 @@
     // "emitBOM": true,                                  /* Emit a UTF-8 Byte Order Mark (BOM) in the beginning of output files. */
     // "newLine": "crlf",                                /* Set the newline character for emitting files. */
     // "stripInternal": true,                            /* Disable emitting declarations that have '@internal' in their JSDoc comments. */
-    // "noEmitHelpers": true,                            /* Disable generating custom helper functions like '__extends' in compiled output. */
-    // "noEmitOnError": true,                            /* Disable emitting files if any type checking errors are reported. */
+    // "noEmitHelpers": true,                            /* Disable generating custom helper functions like '__extends' in compiled output. Доп хелпер фукнции, который импортируется из ts lib и позволяют  делать некие полифилы между тем что написали в js и ts.*/
+    // "noEmitOnError": true,                            /* Disable emitting files if any type checking errors are reported. Если есть ошибки то ничего не компилировать*/
     // "preserveConstEnums": true,                       /* Disable erasing 'const enum' declarations in generated code. */
     // "declarationDir": "./",                           /* Specify the output directory for generated declaration files. */
     // "preserveValueImports": true,                     /* Preserve unused imported values in the JavaScript output that would otherwise be removed. */
@@ -105,15 +105,5 @@
     /* Completeness */
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
-  },
-  "files": [
-    "app.ts" // компиляция будет в app.js
-  ],
-  // "include": [
-  //   "app*" //поддержка паттерн. app* - включить все файлы где есть app, * - любые символы. Теперь скомпилируется и app.js и app2.js
-  // ],
-  // "exclude": [
-  //   "app.ts" // исключит компиляцию в app.js
-  // ],
-  // // "extends": "" //позволяет указать путь до tsconfig, который наследует данный конфиг
+  }
 }
