@@ -1,26 +1,19 @@
 /*  
-  Компилятор TS
+  Модульность и библиотеки
 
-  Проверки кода(раздел type checking)
+  Namespaces и reference
+
+  Namespaces = module
 */
 
-/* noUnusedLocals - если включить, то defaultUser подствети как warning */
-class User {
-  name: string;
-  constructor(name: string) {
-    this.name = name
+namespace A { // - обертка, позволяющая инкапсулировать в себя некую логику
+  export const a = 5;
+
+  export interface B {
+    c: number;
   }
-
-  /* P.s. альтернативна запись присвоения имени name
-    class User {
-      constructor(public name: string) {} //- аналогично с private
-    }
-  */
 }
 
-function createUser(user: User) {
-  //логика
-  const defaultUser = new User('default');
-}
+A.a;
 
-/* noUnusedParameters - неиспользуемые параметры, подсветка их в warning */
+/* reference - сборка в один файл. Для этого в tsconfig - изменить "module": 'AMD и "outFile": "./app.js" */
