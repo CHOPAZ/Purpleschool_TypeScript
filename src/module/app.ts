@@ -1,7 +1,11 @@
 /*  
   Модульность и библиотеки
 
-  Модульность на backend
+  Модульность на frontend
+  Существует две оцпии:
+  1. Собираем все в один bundle,  при помощи webpack, rollup
+  2. Если использовать современные модули, то tsconfig должны быть как для backend + в подключаемом скрипте в html указать <script src="./build/app2.js" type="module"></script>
+
 
   Для того что бы файл считался модулем он должен содержать ключевое слово export
   В tsconfig: "module": "commonjs", "outDir": "./build/"
