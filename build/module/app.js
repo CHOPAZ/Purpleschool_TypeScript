@@ -1,12 +1,16 @@
-"use strict";
 /*
   Модульность и библиотеки
 
-  Namespaces и reference
+  Модульность на backend
+
+  Для того что бы файл считался модулем он должен содержать ключевое слово export
+  В tsconfig: "module": "commonjs", "outDir": "./build/"
+
+  ES6
+  в tsconfig
 */
-var A;
+export const a = 5;
+export var A;
 (function (A) {
     A.a = 5;
 })(A || (A = {}));
-A.a;
-/* reference - сборка в один файл. Для этого в tsconfig - изменить "module": 'AMD и "outFile": "./app.js" */ 

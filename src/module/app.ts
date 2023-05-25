@@ -1,19 +1,22 @@
 /*  
   Модульность и библиотеки
 
-  Namespaces и reference
+  Модульность на backend
 
-  Namespaces = module
+  Для того что бы файл считался модулем он должен содержать ключевое слово export
+  В tsconfig: "module": "commonjs", "outDir": "./build/"
+
+  ES6
+  в tsconfig: "module": "ES6",
+  в package.json:   "type": "module",
+  в конце импорта указать расширение .js
 */
 
-namespace A { // - обертка, позволяющая инкапсулировать в себя некую логику
+export const a = 5;
+export namespace A { // - обертка, позволяющая инкапсулировать в себя некую логику
   export const a = 5;
 
   export interface B {
     c: number;
   }
 }
-
-A.a;
-
-/* reference - сборка в один файл. Для этого в tsconfig - изменить "module": 'AMD и "outFile": "./app.js" */
