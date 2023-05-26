@@ -1,14 +1,19 @@
 /*  
   Модульность и библиотеки
 
-  Import и export
+  Типизация сторонних библиотек
 */
 
-export const a = 5;
 
-export class Test {}
+/* типизация без поддержуи ts 
 
-export const Obj = {}
-export interface B {
-  c: number;
-}
+  будет ошибка, не сможет найти 'really-relaxed-json', как решение использновать перед импортом // @ts-ignore
+*/
+
+
+import {toJson} from 'really-relaxed-json';
+
+const rjson = '[ one two three {foo:bar} ]'
+const json = toJson(rjson)
+
+console.log(json);

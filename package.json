@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/CHOPAZ/Purpleschool_TypeScript/issues"
   },
-  "homepage": "https://github.com/CHOPAZ/Purpleschool_TypeScript#readme"
+  "homepage": "https://github.com/CHOPAZ/Purpleschool_TypeScript#readme",
+  "dependencies": {
+    "really-relaxed-json": "^0.3.2"
+  }
 }
