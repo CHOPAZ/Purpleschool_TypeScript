@@ -1,52 +1,44 @@
 /*  
   Порождающие паттерны:
 
-  Singleton(одиночка)
-
-  Цель : есть два класса Service1-2, и они хотять обращаться к третьему сервису и хранить там какие-то ранетайм ключи Map значения 
+  Prototype - эксплуатирует возможность прототепирование объектов, которые в последствии будем инстанцеировать
 */
 
-class MyMap {
+interface IPrototype<T> {
+  clone(): T
+}
 
-  /* Хранение текущего инстанса */
-  private static instance: MyMap;
-  
-  /* Шина обмена каким-то набором данных */
-  map: Map<string, string> = new Map();
+class UserHistory implements IPrototype<UserHistory> {
 
-  private constructor() {
+  createdAt: Date;
 
+  constructor(public email: string, public name: string) {
+    this.createdAt = new Date();
   }
 
-  /* какая-то бизнес логика */
-  clean() {
-    this.map = new Map();
-  }
-
-  public static get(): MyMap {
-    if(!MyMap.instance) {
-      MyMap.instance = new MyMap()
-    }
-
-    return MyMap.instance
+  clone(): UserHistory {
+    let target = new UserHistory(this.email, this.name);
+    return target;
   }
 }
 
-class Service1 {
-  addMap(key: string, value: string) {
-    const myMap = MyMap.get();
-    myMap.map.set(key, value)
-  }
+let user = new UserHistory('a@a.ru', 'Pavel');
+console.log(user);
+let user2 = user.clone();
+console.log(user2);
+/* 
+  UserHistory {
+  email: 'a@a.ru',
+  name: 'Pavel',
+  createdAt: 2023-05-29T16:09:11.064Z
 }
-
-class Service2 {
-  getKeys(key: string) {
-    const myMap = MyMap.get();
-    console.log(myMap.map.get(key));
-    myMap.clean();
-    console.log(myMap.map.get(key));
-  }
+UserHistory {
+  email: 'a@a.ru',
+  name: 'Pavel',
+  createdAt: 2023-05-29T16:09:11.073Z
 }
+*/
 
-new Service1().addMap('1', 'Work!');
-new Service2().getKeys('1')
+user2.email = 'b@b.ru'
+console.log(user);
+console.log(user2);
