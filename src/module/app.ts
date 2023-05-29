@@ -1,110 +1,52 @@
 /*  
   Порождающие паттерны:
 
-  Factory Method - создает что то
+  Singleton(одиночка)
+
+  Цель : есть два класса Service1-2, и они хотять обращаться к третьему сервису и хранить там какие-то ранетайм ключи Map значения 
 */
 
+class MyMap {
 
-interface IInsurance {
-  id: number;
-  status: string;
-  serVehicle(vehicle: any): void;
-  submit(): Promise<boolean>
-}
-
-class TFInsurance implements IInsurance {
-  id: number;
-  status: string;
-  private vehicle: any;
-  serVehicle(vehicle: any): void {
-    this.vehicle = vehicle;
-  }
-  async submit(): Promise<boolean> {
-    const res = await fetch('', {
-      method: 'POST',
-      body: JSON.stringify({vehicle: this.vehicle})
-    });
-    const data = await res.json
-    return data.isSuccess; // например возвращает isSuccess
-  }
+  /* Хранение текущего инстанса */
+  private static instance: MyMap;
   
-}
+  /* Шина обмена каким-то набором данных */
+  map: Map<string, string> = new Map();
 
+  private constructor() {
 
-class ABInsurance implements IInsurance {
-  id: number;
-  status: string;
-  private vehicle: any;
-  serVehicle(vehicle: any): void {
-    this.vehicle = vehicle;
   }
-  async submit(): Promise<boolean> {
-    const res = await fetch('asd', {
-      method: 'POST',
-      body: JSON.stringify({vehicle: this.vehicle})
-    });
-    const data = await res.json
-    return data.yes; // например возвращает isSuccess
+
+  /* какая-то бизнес логика */
+  clean() {
+    this.map = new Map();
   }
-  
-}
 
+  public static get(): MyMap {
+    if(!MyMap.instance) {
+      MyMap.instance = new MyMap()
+    }
 
-/* Реализация фабрики */
-
-abstract class InsuranceFactory {
-  db: any;
-  abstract createInsurance(): IInsurance;
-
-  saveHistory(ins: IInsurance) {
-    this.db.save(ins.id, ins.status)
+    return MyMap.instance
   }
 }
 
-/* реализация фабрики TF */
-
-class TFInsuranceFactory extends InsuranceFactory {
-  createInsurance(): TFInsurance {
-    return new TFInsurance();
-  }
-  
-}
-
-/* реализация фабрики AB */
-
-class ABInsuranceFactory extends InsuranceFactory {
-  createInsurance(): ABInsurance {
-    return new ABInsurance();
-  }
-  
-}
-
-const tfInsuranceFactory = new TFInsuranceFactory(); // создали
-const ins = tfInsuranceFactory.createInsurance(); // создали метод страховки
-tfInsuranceFactory.saveHistory(ins);
-
-
-
-/* альтернативное решение */
-
-const INSURANCE_TYPE = {
-  tf: TFInsurance,
-  ab: ABInsurance,
-}
-
-type IT = typeof INSURANCE_TYPE;
-
-class InsuranceFactoryAlt {
-  db: any;
-
-  createInsurance<T extends keyof IT>(type: T): IT[T] {
-    return INSURANCE_TYPE[type]
-  }
-
-  saveHistory(ins: IInsurance) {
-    this.db.save(ins.id, ins.status)
+class Service1 {
+  addMap(key: string, value: string) {
+    const myMap = MyMap.get();
+    myMap.map.set(key, value)
   }
 }
 
-const insuranceFactoryAlt = new InsuranceFactoryAlt();
-const ins2 = new (insuranceFactoryAlt.createInsurance('tf'));
+class Service2 {
+  getKeys(key: string) {
+    const myMap = MyMap.get();
+    console.log(myMap.map.get(key));
+    myMap.clean();
+    console.log(myMap.map.get(key));
+  }
+}
+
+new Service1().addMap('1', 'Work!');
+new Service2().getKeys('1')
