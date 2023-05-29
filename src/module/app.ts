@@ -1,44 +1,70 @@
 /*  
   Порождающие паттерны:
 
-  Prototype - эксплуатирует возможность прототепирование объектов, которые в последствии будем инстанцеировать
+  Builder(строитель) - позволяет вынести часть логики построения объекта в рамках класс Builder 
+
+  Цель: Есть класс Builder, который позволяет собрать объект
 */
 
-interface IPrototype<T> {
-  clone(): T
+enum ImageFormat {
+  Png = 'png',
+  Jpeg = 'jpeg'
+}
+interface IResolution {
+  width: number;
+  height: number;
 }
 
-class UserHistory implements IPrototype<UserHistory> {
+interface IImageConversion extends IResolution{
+  format: ImageFormat
+}
 
-  createdAt: Date;
-
-  constructor(public email: string, public name: string) {
-    this.createdAt = new Date();
+/* каждый метод Imagebuilder должен возвращать этот же самый объект, для того что бы объект был chain (вызов методов через точку) */
+class Imagebuilder {
+  private formats: ImageFormat[] = [];
+  private resolution: IResolution[] = [];
+  
+  addPng() {
+    if(this.formats.includes(ImageFormat.Png)) {
+      return this
+    }
+    this.formats.push(ImageFormat.Png)
+    return this
   }
 
-  clone(): UserHistory {
-    let target = new UserHistory(this.email, this.name);
-    return target;
+  addJpeg() {
+    if(this.formats.includes(ImageFormat.Jpeg)) {
+      return this
+    }
+    this.formats.push(ImageFormat.Jpeg)
+    return this
+  }
+
+  addResolution(width: number, height: number) {
+    this.resolution.push({width, height})
+    return this
+  }
+
+  build(): IImageConversion[] {
+    const res: IImageConversion[] = [];
+
+    for(const r of this.resolution) {
+      for(const f of this.formats) {
+        res.push({
+          format: f,
+          width: r.width,
+          height: r.height
+        })
+      }
+    }
+    return res
   }
 }
 
-let user = new UserHistory('a@a.ru', 'Pavel');
-console.log(user);
-let user2 = user.clone();
-console.log(user2);
-/* 
-  UserHistory {
-  email: 'a@a.ru',
-  name: 'Pavel',
-  createdAt: 2023-05-29T16:09:11.064Z
-}
-UserHistory {
-  email: 'a@a.ru',
-  name: 'Pavel',
-  createdAt: 2023-05-29T16:09:11.073Z
-}
-*/
-
-user2.email = 'b@b.ru'
-console.log(user);
-console.log(user2);
+console.log(new Imagebuilder()
+  .addJpeg()
+  .addPng()
+  .addResolution(100, 50)
+  .addResolution(200, 100)
+  .build()
+);

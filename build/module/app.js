@@ -2,35 +2,56 @@
 /*
   Порождающие паттерны:
 
-  Prototype - эксплуатирует возможность прототепирование объектов, которые в последствии будем инстанцеировать
+  Builder(строитель) - позволяет вынести часть логики построения объекта в рамках класс Builder
+
+  Цель: Есть класс Builder, который позволяет собрать объект
 */
-class UserHistory {
-    constructor(email, name) {
-        this.email = email;
-        this.name = name;
-        this.createdAt = new Date();
+var ImageFormat;
+(function (ImageFormat) {
+    ImageFormat["Png"] = "png";
+    ImageFormat["Jpeg"] = "jpeg";
+})(ImageFormat || (ImageFormat = {}));
+/* каждый метод Imagebuilder должен возвращать этот же самый объект, для того что бы объект был chain (вызов методов через точку) */
+class Imagebuilder {
+    constructor() {
+        this.formats = [];
+        this.resolution = [];
     }
-    clone() {
-        let target = new UserHistory(this.email, this.name);
-        return target;
+    addPng() {
+        if (this.formats.includes(ImageFormat.Png)) {
+            return this;
+        }
+        this.formats.push(ImageFormat.Png);
+        return this;
+    }
+    addJpeg() {
+        if (this.formats.includes(ImageFormat.Jpeg)) {
+            return this;
+        }
+        this.formats.push(ImageFormat.Jpeg);
+        return this;
+    }
+    addResolution(width, height) {
+        this.resolution.push({ width, height });
+        return this;
+    }
+    build() {
+        const res = [];
+        for (const r of this.resolution) {
+            for (const f of this.formats) {
+                res.push({
+                    format: f,
+                    width: r.width,
+                    height: r.height
+                });
+            }
+        }
+        return res;
     }
 }
-let user = new UserHistory('a@a.ru', 'Pavel');
-console.log(user);
-let user2 = user.clone();
-console.log(user2);
-/*
-  UserHistory {
-  email: 'a@a.ru',
-  name: 'Pavel',
-  createdAt: 2023-05-29T16:09:11.064Z
-}
-UserHistory {
-  email: 'a@a.ru',
-  name: 'Pavel',
-  createdAt: 2023-05-29T16:09:11.073Z
-}
-*/
-user2.email = 'b@b.ru';
-console.log(user);
-console.log(user2);
+console.log(new Imagebuilder()
+    .addJpeg()
+    .addPng()
+    .addResolution(100, 50)
+    .addResolution(200, 100)
+    .build());
