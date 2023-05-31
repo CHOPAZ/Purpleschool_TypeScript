@@ -1,46 +1,61 @@
 /*  
   Структурные паттерны:
 
-  Proxy (Прокси) - добавление дополнительный слой, который позволяет обращаться к финальному объекту, но добавляет какую-то логику
+  Composite (Композит)
 */
 
-interface IPaymnetAPI {
-  getPaymentDetails(id: number): IPaymnetDetails | undefined;
+abstract class DeliveryItem {
+  items: DeliveryItem[] = [];
+
+  addItem(item: DeliveryItem) {
+    this.items.push(item)
+  }
+
+  getItemPrices(): number {
+    return this.items.reduce((acc: number, i: DeliveryItem) => acc += i.getPrice(), 0)
+  }
+
+  abstract getPrice(): number;
 }
 
-interface IPaymnetDetails {
-  id: number;
-  sum: number;
+class DeliveryShop extends DeliveryItem {
+  constructor(private deliveryFee: number) {
+    super()
+  }
+
+  getPrice(): number {
+    return this.getItemPrices() + this.deliveryFee; //deliveryFee - стоимость доставки
+  }
 }
 
-/* Пример API */
-
-class PaymentAPI implements IPaymnetAPI {
-  private data = [{id: 1, sum: 10000}]
+class Package extends DeliveryItem {
+  getPrice(): number {
+    return this.getItemPrices();
+  }
   
-  getPaymentDetails(id: number): IPaymnetDetails | undefined {
-    return this.data.find(d => d.id === id)
-  }
-
 }
 
-/* Прокси */
+class Product extends DeliveryItem{
 
-class PeymentAccessProxy implements IPaymnetAPI {
-  constructor(private api: PaymentAPI, private userId: number) {
-    
+  constructor(private price: number) {
+    super()
   }
 
-  getPaymentDetails(id: number): IPaymnetDetails | undefined {
-    if (this.userId === 1) {
-      return this.api.getPaymentDetails(id)
-    }
-    console.log('Нет доступа');
-    return undefined;
+  getPrice(): number {
+    return this.price;
   }
 }
 
-const proxy = new PeymentAccessProxy(new PaymentAPI(), 1);
-console.log(proxy.getPaymentDetails(1));
-const proxy2 = new PeymentAccessProxy(new PaymentAPI(), 2);
-console.log(proxy2.getPaymentDetails(1));
+const shop = new DeliveryShop(100);
+shop.addItem(new Product(1000));
+
+const pack1 = new Package();
+pack1.addItem(new Product(200));
+pack1.addItem(new Product(300));
+shop.addItem(pack1)
+
+const pack2 = new Package();
+pack2.addItem(new Product(30));
+shop.addItem(pack2);
+
+console.log(shop.getPrice());
