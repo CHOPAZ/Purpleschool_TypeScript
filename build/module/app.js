@@ -2,51 +2,43 @@
 /*
   Структурные паттерны:
 
-  Bridge (Мост)
+  Facade (Фасад) - скрытие реализации
 */
-class TelegrammProvider {
-    sendMessage(message) {
+class Notify {
+    send(template, to) {
+        console.log(`отправляю ${template}: ${to}`);
+    }
+}
+class Log {
+    log(message) {
         console.log(message);
     }
-    connect(config) {
-        console.log(config);
+}
+class Template {
+    constructor() {
+        this.templatesList = [
+            { name: 'other', template: '<h1>Шаблон</h1>' }
+        ];
     }
-    disconnect() {
-        console.log('Disconnect TG');
+    getByName(name) {
+        return this.templatesList.find(t => t.name === name);
     }
 }
-class WhatsUpProvider {
-    sendMessage(message) {
-        console.log(message);
+class NotificationFacade {
+    constructor() {
+        this.notify = new Notify();
+        this.template = new Template();
+        this.logger = new Log();
     }
-    connect(config) {
-        console.log(config);
-    }
-    disconnect() {
-        console.log('Disconnect WhatsUp');
-    }
-}
-/* Глобальный объект, который будет работать с провайдерами */
-class NotificationSender {
-    constructor(provider) {
-        this.provider = provider;
-    }
-    send() {
-        this.provider.connect('connect');
-        this.provider.sendMessage('message');
-        this.provider.disconnect();
+    send(to, templateName) {
+        const data = this.template.getByName(templateName);
+        if (!data) {
+            this.logger.log('Не найден шаблон');
+            return;
+        }
+        this.notify.send(data.template, to);
+        this.logger.log('Шаблон отправлен');
     }
 }
-/* Реализация отложенного уведомления через наследование */
-class DelayNotificationSender extends NotificationSender {
-    constructor(provider) {
-        super(provider);
-    }
-    sendDelayed() {
-        //
-    }
-}
-const sender = new NotificationSender(new TelegrammProvider());
-sender.send();
-const sender2 = new NotificationSender(new WhatsUpProvider());
-sender2.send();
+const s = new NotificationFacade();
+s.send('a@a.ru', 'other');

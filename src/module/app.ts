@@ -1,67 +1,55 @@
 /*  
   Структурные паттерны:
 
-  Bridge (Мост)
+  Facade (Фасад) - скрытие реализации
 */
 
-/* Интерфейс провайдера (telegram и whatsUp) */
-interface IProvider {
-  sendMessage(message: string): void;
-  connect(config: unknown): void;
-  disconnect(): void;
+class Notify {
+  send(template: string, to: string) {
+    console.log(`отправляю ${template}: ${to}`);
+  }
 }
 
-class TelegrammProvider implements IProvider{
-  sendMessage(message: string): void {
+class Log {
+  log(message: string) {
     console.log(message);
   }
-  connect(config: string): void {
-    console.log(config);
-  }
-  disconnect(): void {
-    console.log('Disconnect TG');
-  }
-
-}
-class WhatsUpProvider implements IProvider{
-  sendMessage(message: string): void {
-    console.log(message);
-  }
-  connect(config: string): void {
-    console.log(config);
-  }
-  disconnect(): void {
-    console.log('Disconnect WhatsUp');
-  }
-
 }
 
+class Template {
+  private templatesList = [
+    {name: 'other', template: '<h1>Шаблон</h1>'}
+  ];
 
-/* Глобальный объект, который будет работать с провайдерами */
-class NotificationSender {
-  constructor(private provider: IProvider) {}
-
-  send() {
-    this.provider.connect('connect');
-    this.provider.sendMessage('message');
-    this.provider.disconnect();
+  getByName(name: string) {
+    return this.templatesList.find(t => t.name === name)
   }
 }
 
-/* Реализация отложенного уведомления через наследование */
+class NotificationFacade {
+  private notify: Notify;
+  private logger: Log;
+  private template: Template;
 
-class DelayNotificationSender extends NotificationSender {
-  constructor(provider: IProvider) {
-    super(provider)
+  constructor() {
+    this.notify = new Notify();
+    this.template = new Template();
+    this.logger = new Log();
   }
-  sendDelayed() {
-    //
+  
+  
+  send(to: string, templateName: string) {
+    const data = this.template.getByName(templateName);
+
+    if(!data) {
+      this.logger.log('Не найден шаблон');
+      return
+    }
+
+    this.notify.send(data.template, to)
+    this.logger.log('Шаблон отправлен')
   }
 }
 
-const sender = new NotificationSender(new TelegrammProvider());
-sender.send();
-
-const sender2 = new NotificationSender(new WhatsUpProvider());
-sender2.send();
-
+const s = new NotificationFacade();
+s.send('a@a.ru', 'other')
