@@ -1,38 +1,46 @@
 /*  
   Структурные паттерны:
 
-  Adapter (Адаптер) - (переходник) Например: (из реальной жизни) переходник с usb 3.0 на TP-C :)
-  - позволяет адаптировать, какой-то неподходящий объект к использованию в нашей среде
+  Proxy (Прокси) - добавление дополнительный слой, который позволяет обращаться к финальному объекту, но добавляет какую-то логику
 */
 
-class KVDataBase {
-  private db: Map<string, string> = new Map();
-  save(key: string, value: string) {
-    this.db.set(key, value)
+interface IPaymnetAPI {
+  getPaymentDetails(id: number): IPaymnetDetails | undefined;
+}
+
+interface IPaymnetDetails {
+  id: number;
+  sum: number;
+}
+
+/* Пример API */
+
+class PaymentAPI implements IPaymnetAPI {
+  private data = [{id: 1, sum: 10000}]
+  
+  getPaymentDetails(id: number): IPaymnetDetails | undefined {
+    return this.data.find(d => d.id === id)
+  }
+
+}
+
+/* Прокси */
+
+class PeymentAccessProxy implements IPaymnetAPI {
+  constructor(private api: PaymentAPI, private userId: number) {
+    
+  }
+
+  getPaymentDetails(id: number): IPaymnetDetails | undefined {
+    if (this.userId === 1) {
+      return this.api.getPaymentDetails(id)
+    }
+    console.log('Нет доступа');
+    return undefined;
   }
 }
 
-class PersitentDB {
-  savePersistent(data: Object) {
-    console.log(data);
-  }
-}
-
-/* Адпатер, который наследует KVDataBase, в конструктор передается PersitentDB*/
-class PersitentDBAdapter extends KVDataBase {
-  constructor(public dataBase: PersitentDB) {
-    super()
-  }
-
-  override save(key: string, value: string): void {
-    this.dataBase.savePersistent({key, value})
-  }
-}
-
-
-/* Код, который работает только с KVDataBase  */
-function run(base: KVDataBase) {
-  base.save('key', 'myValue')
-}
-
-run(new PersitentDBAdapter(new PersitentDB()))
+const proxy = new PeymentAccessProxy(new PaymentAPI(), 1);
+console.log(proxy.getPaymentDetails(1));
+const proxy2 = new PeymentAccessProxy(new PaymentAPI(), 2);
+console.log(proxy2.getPaymentDetails(1));

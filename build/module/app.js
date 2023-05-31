@@ -2,34 +2,32 @@
 /*
   Структурные паттерны:
 
-  Adapter (Адаптер) - (переходник) Например: (из реальной жизни) переходник с usb 3.0 на TP-C :)
-  - позволяет адаптировать, какой-то неподходящий объект к использованию в нашей среде
+  Proxy (Прокси) - добавление дополнительный слой, который позволяет обращаться к финальному объекту, но добавляет какую-то логику
 */
-class KVDataBase {
+/* Пример API */
+class PaymentAPI {
     constructor() {
-        this.db = new Map();
+        this.data = [{ id: 1, sum: 10000 }];
     }
-    save(key, value) {
-        this.db.set(key, value);
-    }
-}
-class PersitentDB {
-    savePersistent(data) {
-        console.log(data);
+    getPaymentDetails(id) {
+        return this.data.find(d => d.id === id);
     }
 }
-/* Адпатер, который наследует KVDataBase, в конструктор передается PersitentDB*/
-class PersitentDBAdapter extends KVDataBase {
-    constructor(dataBase) {
-        super();
-        this.dataBase = dataBase;
+/* Прокси */
+class PeymentAccessProxy {
+    constructor(api, userId) {
+        this.api = api;
+        this.userId = userId;
     }
-    save(key, value) {
-        this.dataBase.savePersistent({ key, value });
+    getPaymentDetails(id) {
+        if (this.userId === 1) {
+            return this.api.getPaymentDetails(id);
+        }
+        console.log('Нет доступа');
+        return undefined;
     }
 }
-/* Код, который работает только с KVDataBase  */
-function run(base) {
-    base.save('key', 'myValue');
-}
-run(new PersitentDBAdapter(new PersitentDB()));
+const proxy = new PeymentAccessProxy(new PaymentAPI(), 1);
+console.log(proxy.getPaymentDetails(1));
+const proxy2 = new PeymentAccessProxy(new PaymentAPI(), 2);
+console.log(proxy2.getPaymentDetails(1));
