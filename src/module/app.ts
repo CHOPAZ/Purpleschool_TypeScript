@@ -1,12 +1,67 @@
 /*  
-  Структурные паттерны - правильное структуирование, и строим иерархию классов внутри приложений
+  Структурные паттерны:
 
-  1. Мост (Bridge) - позволяет расширять мультиприцирующую иерархию класса. Строить удобные мосты между двумя различными типизациями класса
-  2. Фасад (Facade) - позволяет скрывать какую-то реализацию за собой
-  3. Адаптер (Adapter) - для добавления нового объекта в существующий код
-  4. Прокси (Proxy) - встает перед используемом классом, проксируя запросы, добавляя каку-то логику
-  5. Композит (Composite) - работает с древовидными струкутурами, упрощая взаимодействие и работу с ними
-
-
+  Bridge (Мост)
 */
+
+/* Интерфейс провайдера (telegram и whatsUp) */
+interface IProvider {
+  sendMessage(message: string): void;
+  connect(config: unknown): void;
+  disconnect(): void;
+}
+
+class TelegrammProvider implements IProvider{
+  sendMessage(message: string): void {
+    console.log(message);
+  }
+  connect(config: string): void {
+    console.log(config);
+  }
+  disconnect(): void {
+    console.log('Disconnect TG');
+  }
+
+}
+class WhatsUpProvider implements IProvider{
+  sendMessage(message: string): void {
+    console.log(message);
+  }
+  connect(config: string): void {
+    console.log(config);
+  }
+  disconnect(): void {
+    console.log('Disconnect WhatsUp');
+  }
+
+}
+
+
+/* Глобальный объект, который будет работать с провайдерами */
+class NotificationSender {
+  constructor(private provider: IProvider) {}
+
+  send() {
+    this.provider.connect('connect');
+    this.provider.sendMessage('message');
+    this.provider.disconnect();
+  }
+}
+
+/* Реализация отложенного уведомления через наследование */
+
+class DelayNotificationSender extends NotificationSender {
+  constructor(provider: IProvider) {
+    super(provider)
+  }
+  sendDelayed() {
+    //
+  }
+}
+
+const sender = new NotificationSender(new TelegrammProvider());
+sender.send();
+
+const sender2 = new NotificationSender(new WhatsUpProvider());
+sender2.send();
 

@@ -1,57 +1,52 @@
 "use strict";
 /*
-  Порождающие паттерны:
+  Структурные паттерны:
 
-  Builder(строитель) - позволяет вынести часть логики построения объекта в рамках класс Builder
-
-  Цель: Есть класс Builder, который позволяет собрать объект
+  Bridge (Мост)
 */
-var ImageFormat;
-(function (ImageFormat) {
-    ImageFormat["Png"] = "png";
-    ImageFormat["Jpeg"] = "jpeg";
-})(ImageFormat || (ImageFormat = {}));
-/* каждый метод Imagebuilder должен возвращать этот же самый объект, для того что бы объект был chain (вызов методов через точку) */
-class Imagebuilder {
-    constructor() {
-        this.formats = [];
-        this.resolution = [];
+class TelegrammProvider {
+    sendMessage(message) {
+        console.log(message);
     }
-    addPng() {
-        if (this.formats.includes(ImageFormat.Png)) {
-            return this;
-        }
-        this.formats.push(ImageFormat.Png);
-        return this;
+    connect(config) {
+        console.log(config);
     }
-    addJpeg() {
-        if (this.formats.includes(ImageFormat.Jpeg)) {
-            return this;
-        }
-        this.formats.push(ImageFormat.Jpeg);
-        return this;
-    }
-    addResolution(width, height) {
-        this.resolution.push({ width, height });
-        return this;
-    }
-    build() {
-        const res = [];
-        for (const r of this.resolution) {
-            for (const f of this.formats) {
-                res.push({
-                    format: f,
-                    width: r.width,
-                    height: r.height
-                });
-            }
-        }
-        return res;
+    disconnect() {
+        console.log('Disconnect TG');
     }
 }
-console.log(new Imagebuilder()
-    .addJpeg()
-    .addPng()
-    .addResolution(100, 50)
-    .addResolution(200, 100)
-    .build());
+class WhatsUpProvider {
+    sendMessage(message) {
+        console.log(message);
+    }
+    connect(config) {
+        console.log(config);
+    }
+    disconnect() {
+        console.log('Disconnect WhatsUp');
+    }
+}
+/* Глобальный объект, который будет работать с провайдерами */
+class NotificationSender {
+    constructor(provider) {
+        this.provider = provider;
+    }
+    send() {
+        this.provider.connect('connect');
+        this.provider.sendMessage('message');
+        this.provider.disconnect();
+    }
+}
+/* Реализация отложенного уведомления через наследование */
+class DelayNotificationSender extends NotificationSender {
+    constructor(provider) {
+        super(provider);
+    }
+    sendDelayed() {
+        //
+    }
+}
+const sender = new NotificationSender(new TelegrammProvider());
+sender.send();
+const sender2 = new NotificationSender(new WhatsUpProvider());
+sender2.send();
