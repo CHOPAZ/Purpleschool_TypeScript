@@ -1,70 +1,12 @@
 /*  
-  Порождающие паттерны:
+  Структурные паттерны - правильное структуирование, и строим иерархию классов внутри приложений
 
-  Builder(строитель) - позволяет вынести часть логики построения объекта в рамках класс Builder 
+  1. Мост (Bridge) - позволяет расширять мультиприцирующую иерархию класса. Строить удобные мосты между двумя различными типизациями класса
+  2. Фасад (Facade) - позволяет скрывать какую-то реализацию за собой
+  3. Адаптер (Adapter) - для добавления нового объекта в существующий код
+  4. Прокси (Proxy) - встает перед используемом классом, проксируя запросы, добавляя каку-то логику
+  5. Композит (Composite) - работает с древовидными струкутурами, упрощая взаимодействие и работу с ними
 
-  Цель: Есть класс Builder, который позволяет собрать объект
+
 */
 
-enum ImageFormat {
-  Png = 'png',
-  Jpeg = 'jpeg'
-}
-interface IResolution {
-  width: number;
-  height: number;
-}
-
-interface IImageConversion extends IResolution{
-  format: ImageFormat
-}
-
-/* каждый метод Imagebuilder должен возвращать этот же самый объект, для того что бы объект был chain (вызов методов через точку) */
-class Imagebuilder {
-  private formats: ImageFormat[] = [];
-  private resolution: IResolution[] = [];
-  
-  addPng() {
-    if(this.formats.includes(ImageFormat.Png)) {
-      return this
-    }
-    this.formats.push(ImageFormat.Png)
-    return this
-  }
-
-  addJpeg() {
-    if(this.formats.includes(ImageFormat.Jpeg)) {
-      return this
-    }
-    this.formats.push(ImageFormat.Jpeg)
-    return this
-  }
-
-  addResolution(width: number, height: number) {
-    this.resolution.push({width, height})
-    return this
-  }
-
-  build(): IImageConversion[] {
-    const res: IImageConversion[] = [];
-
-    for(const r of this.resolution) {
-      for(const f of this.formats) {
-        res.push({
-          format: f,
-          width: r.width,
-          height: r.height
-        })
-      }
-    }
-    return res
-  }
-}
-
-console.log(new Imagebuilder()
-  .addJpeg()
-  .addPng()
-  .addResolution(100, 50)
-  .addResolution(200, 100)
-  .build()
-);
