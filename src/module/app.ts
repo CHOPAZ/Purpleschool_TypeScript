@@ -1,55 +1,38 @@
 /*  
   Структурные паттерны:
 
-  Facade (Фасад) - скрытие реализации
+  Adapter (Адаптер) - (переходник) Например: (из реальной жизни) переходник с usb 3.0 на TP-C :)
+  - позволяет адаптировать, какой-то неподходящий объект к использованию в нашей среде
 */
 
-class Notify {
-  send(template: string, to: string) {
-    console.log(`отправляю ${template}: ${to}`);
+class KVDataBase {
+  private db: Map<string, string> = new Map();
+  save(key: string, value: string) {
+    this.db.set(key, value)
   }
 }
 
-class Log {
-  log(message: string) {
-    console.log(message);
+class PersitentDB {
+  savePersistent(data: Object) {
+    console.log(data);
   }
 }
 
-class Template {
-  private templatesList = [
-    {name: 'other', template: '<h1>Шаблон</h1>'}
-  ];
+/* Адпатер, который наследует KVDataBase, в конструктор передается PersitentDB*/
+class PersitentDBAdapter extends KVDataBase {
+  constructor(public dataBase: PersitentDB) {
+    super()
+  }
 
-  getByName(name: string) {
-    return this.templatesList.find(t => t.name === name)
+  override save(key: string, value: string): void {
+    this.dataBase.savePersistent({key, value})
   }
 }
 
-class NotificationFacade {
-  private notify: Notify;
-  private logger: Log;
-  private template: Template;
 
-  constructor() {
-    this.notify = new Notify();
-    this.template = new Template();
-    this.logger = new Log();
-  }
-  
-  
-  send(to: string, templateName: string) {
-    const data = this.template.getByName(templateName);
-
-    if(!data) {
-      this.logger.log('Не найден шаблон');
-      return
-    }
-
-    this.notify.send(data.template, to)
-    this.logger.log('Шаблон отправлен')
-  }
+/* Код, который работает только с KVDataBase  */
+function run(base: KVDataBase) {
+  base.save('key', 'myValue')
 }
 
-const s = new NotificationFacade();
-s.send('a@a.ru', 'other')
+run(new PersitentDBAdapter(new PersitentDB()))

@@ -2,43 +2,34 @@
 /*
   Структурные паттерны:
 
-  Facade (Фасад) - скрытие реализации
+  Adapter (Адаптер) - (переходник) Например: (из реальной жизни) переходник с usb 3.0 на TP-C :)
+  - позволяет адаптировать, какой-то неподходящий объект к использованию в нашей среде
 */
-class Notify {
-    send(template, to) {
-        console.log(`отправляю ${template}: ${to}`);
-    }
-}
-class Log {
-    log(message) {
-        console.log(message);
-    }
-}
-class Template {
+class KVDataBase {
     constructor() {
-        this.templatesList = [
-            { name: 'other', template: '<h1>Шаблон</h1>' }
-        ];
+        this.db = new Map();
     }
-    getByName(name) {
-        return this.templatesList.find(t => t.name === name);
+    save(key, value) {
+        this.db.set(key, value);
     }
 }
-class NotificationFacade {
-    constructor() {
-        this.notify = new Notify();
-        this.template = new Template();
-        this.logger = new Log();
-    }
-    send(to, templateName) {
-        const data = this.template.getByName(templateName);
-        if (!data) {
-            this.logger.log('Не найден шаблон');
-            return;
-        }
-        this.notify.send(data.template, to);
-        this.logger.log('Шаблон отправлен');
+class PersitentDB {
+    savePersistent(data) {
+        console.log(data);
     }
 }
-const s = new NotificationFacade();
-s.send('a@a.ru', 'other');
+/* Адпатер, который наследует KVDataBase, в конструктор передается PersitentDB*/
+class PersitentDBAdapter extends KVDataBase {
+    constructor(dataBase) {
+        super();
+        this.dataBase = dataBase;
+    }
+    save(key, value) {
+        this.dataBase.savePersistent({ key, value });
+    }
+}
+/* Код, который работает только с KVDataBase  */
+function run(base) {
+    base.save('key', 'myValue');
+}
+run(new PersitentDBAdapter(new PersitentDB()));
