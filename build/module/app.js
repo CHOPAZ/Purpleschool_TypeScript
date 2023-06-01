@@ -1,50 +1,74 @@
 "use strict";
 /*
-  Структурные паттерны:
+  Поведенческие паттерны - решают задачу эффективного взаимодействия между компонентами.
 
-  Composite (Композит)
+  1. Chain of Command / Цепочка вызово - практически в любой API, где есть обработчики. Задача Chain of Command построить такую цепоку,
+    которая бы отрабатывала входящий запрос-например, и передавала бы это друг за другом
+
 */
-class DeliveryItem {
-    constructor() {
-        this.items = [];
+class AbstractMiddleWare {
+    next(mid) {
+        this.nextMiddleWare = mid;
+        return mid;
     }
-    addItem(item) {
-        this.items.push(item);
-    }
-    getItemPrices() {
-        return this.items.reduce((acc, i) => acc += i.getPrice(), 0);
-    }
-}
-class DeliveryShop extends DeliveryItem {
-    constructor(deliveryFee) {
-        super();
-        this.deliveryFee = deliveryFee;
-    }
-    getPrice() {
-        return this.getItemPrices() + this.deliveryFee; //deliveryFee - стоимость доставки
+    handle(request) {
+        if (this.nextMiddleWare) {
+            return this.nextMiddleWare.handle(request);
+        }
+        return;
     }
 }
-class Package extends DeliveryItem {
-    getPrice() {
-        return this.getItemPrices();
+/* Авторизация */
+class AuthMiddleWare extends AbstractMiddleWare {
+    handle(request) {
+        console.log('AuthMiddleWare');
+        if (request.userId === 1) {
+            return super.handle(request); // super.handle(request) вызывает метод handle() из абстрактного класса AbstractMiddleWare
+        }
+        return { error: 'Вы не авторизованы' };
     }
 }
-class Product extends DeliveryItem {
-    constructor(price) {
-        super();
-        this.price = price;
-    }
-    getPrice() {
-        return this.price;
+/* Валидация */
+class ValidateMiddleWare extends AbstractMiddleWare {
+    handle(request) {
+        console.log('ValidateMiddleWare');
+        if (request.body) {
+            return super.handle(request);
+        }
+        return { error: 'Нет тела данных' };
     }
 }
-const shop = new DeliveryShop(100);
-shop.addItem(new Product(1000));
-const pack1 = new Package();
-pack1.addItem(new Product(200));
-pack1.addItem(new Product(300));
-shop.addItem(pack1);
-const pack2 = new Package();
-pack2.addItem(new Product(30));
-shop.addItem(pack2);
-console.log(shop.getPrice());
+/*  */
+class Controller extends AbstractMiddleWare {
+    handle(request) {
+        console.log('Controller');
+        return { success: request };
+    }
+}
+const controller = new Controller();
+const validate = new ValidateMiddleWare();
+const auth = new AuthMiddleWare();
+/* Цепочка вызово */
+auth.next(validate).next(controller);
+/*
+  AuthMiddleWare
+  { error: 'Вы не авторизованы' }
+*/
+console.log(auth.handle({
+    userId: 3
+}));
+/*
+  AuthMiddleWare
+  ValidateMiddleWare
+  { error: 'Нет тела данных' }
+*/
+console.log(auth.handle({
+    userId: 1
+}));
+/*
+
+*/
+console.log(auth.handle({
+    userId: 1,
+    body: 'I am ok'
+}));
