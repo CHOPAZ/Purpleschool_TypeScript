@@ -2,46 +2,71 @@
 /*
   Поведенческие паттерны - решают задачу эффективного взаимодействия между компонентами.
 
-  2. Mediator (посредник) - используется на фронтенде для связывания компонентов, которые разрознены и не знают друг о друге
+  2. Command (Команда) - отдельный класс, позволяющий реализовать например отложенный запуск или очередь
 */
-class Mediated {
-    setMediator(mediator) {
-        this.mediator = mediator;
+class User {
+    constructor(userId) {
+        this.userId = userId;
     }
 }
-class Notifications {
-    send() {
-        console.log('Отправляю уведомление');
+class UserService {
+    saveUser(user) {
+        console.log(`Сохраняю пользователя с id: ${user.userId}`);
+    }
+    deleteUser(userId) {
+        console.log(`Удаляем пользователя с id: ${userId}`);
     }
 }
-class Log {
-    log(message) {
-        console.log(message);
+/* Реализация взаимодействия Controller и UserService через паттерн command*/
+class CommandHystory {
+    constructor() {
+        this.commands = [];
+    }
+    addCommand(command) {
+        this.commands.push(command);
+    }
+    removeCommand(command) {
+        this.commands = this.commands.filter(c => c.commandId !== command.commandId);
     }
 }
-class EventHandler extends Mediated {
-    myEvent() {
-        this.mediator.notify('EventHamdler', 'myEvent');
+class Command {
+    constructor(history) {
+        this.history = history;
+        this.commandId = Math.random();
     }
 }
-class NotificationsMediator {
-    constructor(notifications, logger, handler) {
-        this.notifications = notifications;
-        this.logger = logger;
-        this.handler = handler;
+class AddUserCommand extends Command {
+    constructor(user, receiver, history) {
+        super(history);
+        this.user = user;
+        this.receiver = receiver;
     }
-    notify(_, event) {
-        switch (event) {
-            case 'myEvent':
-                this.notifications.send();
-                this.logger.log('Отправлено');
-                break;
-        }
+    /* выполнение команды */
+    execute() {
+        this.receiver.saveUser(this.user);
+        this.history.addCommand(this);
+    }
+    /* откат */
+    undo() {
+        this.receiver.deleteUser(this.user.userId);
+        this.history.removeCommand(this);
     }
 }
-const handler = new EventHandler();
-const logger = new Log();
-const notifications = new Notifications();
-const mediator = new NotificationsMediator(notifications, logger, handler);
-handler.setMediator(mediator);
-handler.myEvent();
+class Controller {
+    constructor() {
+        this.history = new CommandHystory;
+    }
+    addReceiver(receiver) {
+        this.receiver = receiver;
+    }
+    run() {
+        const addUserCommand = new AddUserCommand(new User(1), this.receiver, this.history);
+        addUserCommand.execute();
+        console.log(addUserCommand.history);
+        addUserCommand.undo();
+        console.log(addUserCommand.history);
+    }
+}
+const controller = new Controller();
+controller.addReceiver(new UserService());
+controller.run();

@@ -1,65 +1,92 @@
 /*  
   Поведенческие паттерны - решают задачу эффективного взаимодействия между компонентами.
 
-  2. Mediator (посредник) - используется на фронтенде для связывания компонентов, которые разрознены и не знают друг о друге
+  2. Command (Команда) - отдельный класс, позволяющий реализовать например отложенный запуск или очередь
 */
 
-interface Mediator {
-  notify(sender: string, event: string): void;
+
+class User {
+  constructor(public userId: number) {}
 }
 
-abstract class Mediated {
-  mediator: Mediator;
-  setMediator(mediator: Mediator) {
-    this.mediator = mediator;
+class UserService {
+  saveUser(user: User) {
+    console.log(`Сохраняю пользователя с id: ${user.userId}`);
+  }
+
+  deleteUser(userId: number) {
+    console.log(`Удаляем пользователя с id: ${userId}`);
   }
 }
 
-class Notifications {
-  send() {
-    console.log('Отправляю уведомление');
+/* Реализация взаимодействия Controller и UserService через паттерн command*/
+
+class CommandHystory {
+  public commands: Command[] = [];
+  addCommand(command: Command) {
+    this.commands.push(command)
+  }
+
+  removeCommand(command: Command) {
+    this.commands = this.commands.filter(c => c.commandId !== command.commandId)
+  }
+}
+abstract class Command {
+  public commandId: number;
+
+  abstract execute(): void;
+
+  constructor(public history: CommandHystory) {
+    this.commandId = Math.random()
   }
 }
 
-class Log {
-  log(message: string) {
-    console.log(message);
-  }
-}
-
-class EventHandler extends Mediated{
-  myEvent() {
-    this.mediator.notify('EventHamdler', 'myEvent');
-  }
-}
-
-class NotificationsMediator implements Mediator {
+class AddUserCommand extends Command {
   constructor(
-    public notifications: Notifications,
-    public logger: Log,
-    public handler: EventHandler
-  ) {}
-  notify(_: string, event: string): void {
-    switch (event) {
-      case 'myEvent':
-        this.notifications.send();
-        this.logger.log('Отправлено');
-        break;
-    }
+    private user: User,
+    private receiver: UserService,
+    history: CommandHystory
+    ) {
+    super(history);
   }
-  
+
+  /* выполнение команды */
+  execute(): void {
+    this.receiver.saveUser(this.user);
+    this.history.addCommand(this)
+  }
+
+  /* откат */
+  undo() {
+    this.receiver.deleteUser(this.user.userId)
+    this.history.removeCommand(this);
+
+  }
 }
 
-const handler = new EventHandler();
-const logger = new Log();
-const notifications = new Notifications();
 
-const mediator = new NotificationsMediator(
-  notifications,
-  logger,
-  handler
-);
 
-handler.setMediator(mediator);
+class Controller {
+  receiver: UserService;
+  history: CommandHystory = new CommandHystory;
+  addReceiver(receiver: UserService) {
+    this.receiver = receiver;
+  }
 
-handler.myEvent()
+
+  run() {
+    const addUserCommand = new AddUserCommand(
+      new User(1),
+      this.receiver,
+      this.history
+    );
+    addUserCommand.execute();
+    console.log(addUserCommand.history);
+    addUserCommand.undo();
+    console.log(addUserCommand.history);
+  }
+}
+
+const controller = new Controller();
+controller.addReceiver(new UserService());
+controller.run()
