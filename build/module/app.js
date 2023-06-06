@@ -2,71 +2,62 @@
 /*
   Поведенческие паттерны - решают задачу эффективного взаимодействия между компонентами.
 
-  2. Command (Команда) - отдельный класс, позволяющий реализовать например отложенный запуск или очередь
+  4. State - состояние отдельного элемента, который можно улучшить используя паттерн state
 */
-class User {
-    constructor(userId) {
-        this.userId = userId;
-    }
-}
-class UserService {
-    saveUser(user) {
-        console.log(`Сохраняю пользователя с id: ${user.userId}`);
-    }
-    deleteUser(userId) {
-        console.log(`Удаляем пользователя с id: ${userId}`);
-    }
-}
-/* Реализация взаимодействия Controller и UserService через паттерн command*/
-class CommandHystory {
+class DocumentItem {
     constructor() {
-        this.commands = [];
+        this.setState(new DraftDocumentItemState());
     }
-    addCommand(command) {
-        this.commands.push(command);
+    getState() {
+        return this.state;
     }
-    removeCommand(command) {
-        this.commands = this.commands.filter(c => c.commandId !== command.commandId);
+    setState(state) {
+        this.state = state;
+        this.state.setContext(this);
     }
-}
-class Command {
-    constructor(history) {
-        this.history = history;
-        this.commandId = Math.random();
+    publishDoc() {
+        this.state.publish();
     }
-}
-class AddUserCommand extends Command {
-    constructor(user, receiver, history) {
-        super(history);
-        this.user = user;
-        this.receiver = receiver;
-    }
-    /* выполнение команды */
-    execute() {
-        this.receiver.saveUser(this.user);
-        this.history.addCommand(this);
-    }
-    /* откат */
-    undo() {
-        this.receiver.deleteUser(this.user.userId);
-        this.history.removeCommand(this);
+    deleteDoc() {
+        this.state.delete();
     }
 }
-class Controller {
+class DocumentItemState {
+    setContext(item) {
+        this.item = item;
+    }
+}
+class DraftDocumentItemState extends DocumentItemState {
     constructor() {
-        this.history = new CommandHystory;
+        super();
+        this.name = 'Draft Document';
     }
-    addReceiver(receiver) {
-        this.receiver = receiver;
+    publish() {
+        console.log(`На сайт отправлен текст ${this.item.text}`);
+        this.item.setState(new PublishDocumentItemState());
     }
-    run() {
-        const addUserCommand = new AddUserCommand(new User(1), this.receiver, this.history);
-        addUserCommand.execute();
-        console.log(addUserCommand.history);
-        addUserCommand.undo();
-        console.log(addUserCommand.history);
+    delete() {
+        console.log(`Документ удален`);
     }
 }
-const controller = new Controller();
-controller.addReceiver(new UserService());
-controller.run();
+class PublishDocumentItemState extends DocumentItemState {
+    constructor() {
+        super();
+        this.name = 'Publish Document';
+    }
+    publish() {
+        console.log('Нельзя  опубликовать опублекованный документ');
+    }
+    delete() {
+        console.log('Снято с публикации');
+        this.item.setState(new DraftDocumentItemState());
+    }
+}
+const item = new DocumentItem();
+item.text = 'Мой пост!';
+console.log(item.getState());
+item.publishDoc();
+console.log(item.getState());
+item.publishDoc();
+item.deleteDoc();
+console.log(item.getState());
