@@ -1,82 +1,56 @@
 /*  
   Поведенческие паттерны - решают задачу эффективного взаимодействия между компонентами.
 
-  4. State - состояние отдельного элемента, который можно улучшить используя паттерн state
+  5. Strategy - поведенческий алгоритм, в рамках которого, выделяем схожее поведение (алгоритмы) в нашей системе в отдельные классы,
+    после чего можно быстро их испольвзовать взаимозаменяя друг другом
 */
 
-class DocumentItem {
-  public text: string;
-  private state: DocumentItemState;
+class User {
+  githubToken: string;
+  jwtToken: string;
+}
 
-  constructor() {
-    this.setState(new DraftDocumentItemState())
+interface AuthStratуgy {
+  auth(user: User): boolean;
+}
+
+class Auth {
+  constructor(private strategy: AuthStratуgy) {}
+
+  setStrategy(strategy: AuthStratуgy) {
+    this.strategy = strategy
   }
-
-  getState() {
-    return this.state;
-  }
-
-  setState(state: DocumentItemState) {
-    this.state = state;
-    this.state.setContext(this)
-  }
-
-  publishDoc() {
-    this.state.publish()
-  }
-
-  deleteDoc() {
-    this.state.delete()
+  public authUser(user: User): boolean {
+    return this.strategy.auth(user)
   }
 }
 
-abstract class DocumentItemState {
-  public name: string;
-
-  public item: DocumentItem;
-
-  public setContext(item: DocumentItem) {
-    this.item = item
+class JWTStrategy implements AuthStratуgy {
+  auth(user: User): boolean {
+    if (user.jwtToken) {
+      //логика
+      return true
+    }
+    return false
   }
-
-  public abstract publish(): void;
-  public abstract delete(): void;
-
+  
 }
 
-class DraftDocumentItemState extends DocumentItemState{
-  constructor() {
-    super();
-    this.name = 'Draft Document'
-  }
-  public publish(): void {
-    console.log(`На сайт отправлен текст ${this.item.text}`);
-    this.item.setState(new PublishDocumentItemState())
-  }
-  public delete(): void {
-    console.log(`Документ удален`);
+class GitHubStrategy implements AuthStratуgy {
+  auth(user: User): boolean {
+    if (user.githubToken) {
+      //логика
+      return true
+    }
+    return false
   }
 }
 
-class PublishDocumentItemState extends DocumentItemState{
-  constructor() {
-    super();
-    this.name = 'Publish Document'
-  }
-  public publish(): void {
-    console.log('Нельзя  опубликовать опублекованный документ');
-  }
-  public delete(): void {
-    console.log('Снято с публикации');
-    this.item.setState(new DraftDocumentItemState())
-  }
-}
+const user = new User();
+user.jwtToken = 'token';
 
-const item = new DocumentItem();
-item.text = 'Мой пост!';
-console.log(item.getState());
-item.publishDoc();
-console.log(item.getState());
-item.publishDoc();
-item.deleteDoc()
-console.log(item.getState());
+const auth = new Auth(new JWTStrategy());
+console.log(auth.authUser(user));
+
+auth.setStrategy(new GitHubStrategy());
+console.log(auth.authUser(user));

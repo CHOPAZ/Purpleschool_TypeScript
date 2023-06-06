@@ -2,62 +2,43 @@
 /*
   Поведенческие паттерны - решают задачу эффективного взаимодействия между компонентами.
 
-  4. State - состояние отдельного элемента, который можно улучшить используя паттерн state
+  5. Strategy - поведенческий алгоритм, в рамках которого, выделяем схожее поведение (алгоритмы) в нашей системе в отдельные классы,
+    после чего можно быстро их испольвзовать взаимозаменяя друг другом
 */
-class DocumentItem {
-    constructor() {
-        this.setState(new DraftDocumentItemState());
+class User {
+}
+class Auth {
+    constructor(strategy) {
+        this.strategy = strategy;
     }
-    getState() {
-        return this.state;
+    setStrategy(strategy) {
+        this.strategy = strategy;
     }
-    setState(state) {
-        this.state = state;
-        this.state.setContext(this);
-    }
-    publishDoc() {
-        this.state.publish();
-    }
-    deleteDoc() {
-        this.state.delete();
+    authUser(user) {
+        return this.strategy.auth(user);
     }
 }
-class DocumentItemState {
-    setContext(item) {
-        this.item = item;
+class JWTStrategy {
+    auth(user) {
+        if (user.jwtToken) {
+            //логика
+            return true;
+        }
+        return false;
     }
 }
-class DraftDocumentItemState extends DocumentItemState {
-    constructor() {
-        super();
-        this.name = 'Draft Document';
-    }
-    publish() {
-        console.log(`На сайт отправлен текст ${this.item.text}`);
-        this.item.setState(new PublishDocumentItemState());
-    }
-    delete() {
-        console.log(`Документ удален`);
+class GitHubStrategy {
+    auth(user) {
+        if (user.githubToken) {
+            //логика
+            return true;
+        }
+        return false;
     }
 }
-class PublishDocumentItemState extends DocumentItemState {
-    constructor() {
-        super();
-        this.name = 'Publish Document';
-    }
-    publish() {
-        console.log('Нельзя  опубликовать опублекованный документ');
-    }
-    delete() {
-        console.log('Снято с публикации');
-        this.item.setState(new DraftDocumentItemState());
-    }
-}
-const item = new DocumentItem();
-item.text = 'Мой пост!';
-console.log(item.getState());
-item.publishDoc();
-console.log(item.getState());
-item.publishDoc();
-item.deleteDoc();
-console.log(item.getState());
+const user = new User();
+user.jwtToken = 'token';
+const auth = new Auth(new JWTStrategy());
+console.log(auth.authUser(user));
+auth.setStrategy(new GitHubStrategy());
+console.log(auth.authUser(user));
