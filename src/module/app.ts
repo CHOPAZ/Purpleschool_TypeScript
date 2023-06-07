@@ -1,51 +1,76 @@
 /*  
   Поведенческие паттерны - решают задачу эффективного взаимодействия между компонентами.
 
-  7. Template Method (шаблонный метод) - 
+  8. Observer (Наблюдатель)
 */
 
-class Form {
-  constructor(public name: string) {}
+interface IObserver {
+  update(subject: Subject): void;
 }
 
-/* Шаблонный метод */
-abstract class SaveForm<T> {
-  public save(form: Form) {
-    const res = this.fill(form);
-    this.log(res);
-    this.send(res);
-  }
-
-  protected abstract fill(form: Form): T;
-  protected log(data: T): void {
-    console.log(data);
-  }
-  
-  protected abstract send(data: T): void;
+interface Subject {
+  attach(observer: IObserver): void //подписаться на событие
+  detach(observer: IObserver): void //отписка от событие
+  notify(): void //отправить событие
 }
 
-class FerstAPI extends SaveForm<string> {
-  protected fill(form: Form): string {
-    return form.name;
+/* пришел с сайта */
+class Lead {
+  constructor(public name: string, public phone: string) {}
+}
+
+/* rjulf ghb[jlbn yjdsq ] */
+class NewLead implements Subject {
+  /* те кто подписался */
+  private observers: IObserver[] =[];
+  /* полезная информация */
+  public state: Lead;
+
+  attach(observer: IObserver): void {
+    if (this.observers.includes(observer)) {
+      return
+    }
+    this.observers.push(observer)
   }
-  protected send(data: string): void {
-    console.log(`Отправляю ${data}`);
+  detach(observer: IObserver): void {
+    const observerIndex = this.observers.indexOf(observer);
+    if(observerIndex === -1) {
+      return
+    }
+    this.observers.splice(observerIndex, 1)
+  }
+  notify(): void {
+    for (const observer of this.observers) {
+      observer.update(this)
+    }
   }
 
 }
 
-class SecondAPI extends SaveForm<{fio: string}> {
-  protected fill(form: Form): {fio: string} {
-    return {fio: form.name};
+/* подписчики */
+class NotificationService implements IObserver {
+  update(subject: Subject): void {
+    console.log(`NotificationService получил уведомление`);
+    console.log(subject);
   }
-  protected send(data: {fio: string}): void {
-    console.log(`Отправляю ${data}`);
-  }
-
 }
 
-const form1 = new FerstAPI();
-form1.save(new Form('Вася'));
+class LeadService implements IObserver {
+  update(subject: Subject): void {
+    console.log(`LeadService получил уведомление`);
+    console.log(subject);
+  }
+}
 
-const form2 = new SecondAPI();
-form2.save(new Form('Петя'));
+const subject = new NewLead();
+subject.state = new Lead('Паша', '456464');
+
+const s1 = new NotificationService()
+const s2 = new LeadService()
+
+/* подписка */
+subject.attach(s1);
+subject.attach(s2);
+subject.notify();
+subject.detach(s1);
+subject.notify();

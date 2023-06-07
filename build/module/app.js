@@ -2,41 +2,60 @@
 /*
   Поведенческие паттерны - решают задачу эффективного взаимодействия между компонентами.
 
-  7. Template Method (шаблонный метод) -
+  8. Observer (Наблюдатель)
 */
-class Form {
-    constructor(name) {
+/* пришел с сайта */
+class Lead {
+    constructor(name, phone) {
         this.name = name;
+        this.phone = phone;
     }
 }
-/* Шаблонный метод */
-class SaveForm {
-    save(form) {
-        const res = this.fill(form);
-        this.log(res);
-        this.send(res);
+/* rjulf ghb[jlbn yjdsq ] */
+class NewLead {
+    constructor() {
+        /* те кто подписался */
+        this.observers = [];
     }
-    log(data) {
-        console.log(data);
+    attach(observer) {
+        if (this.observers.includes(observer)) {
+            return;
+        }
+        this.observers.push(observer);
     }
-}
-class FerstAPI extends SaveForm {
-    fill(form) {
-        return form.name;
+    detach(observer) {
+        const observerIndex = this.observers.indexOf(observer);
+        if (observerIndex === -1) {
+            return;
+        }
+        this.observers.splice(observerIndex, 1);
     }
-    send(data) {
-        console.log(`Отправляю ${data}`);
-    }
-}
-class SecondAPI extends SaveForm {
-    fill(form) {
-        return { fio: form.name };
-    }
-    send(data) {
-        console.log(`Отправляю ${data}`);
+    notify() {
+        for (const observer of this.observers) {
+            observer.update(this);
+        }
     }
 }
-const form1 = new FerstAPI();
-form1.save(new Form('Вася'));
-const form2 = new SecondAPI();
-form2.save(new Form('Петя'));
+/* подписчики */
+class NotificationService {
+    update(subject) {
+        console.log(`NotificationService получил уведомление`);
+        console.log(subject);
+    }
+}
+class LeadService {
+    update(subject) {
+        console.log(`LeadService получил уведомление`);
+        console.log(subject);
+    }
+}
+const subject = new NewLead();
+subject.state = new Lead('Паша', '456464');
+const s1 = new NotificationService();
+const s2 = new LeadService();
+/* подписка */
+subject.attach(s1);
+subject.attach(s2);
+subject.notify();
+subject.detach(s1);
+subject.notify();
