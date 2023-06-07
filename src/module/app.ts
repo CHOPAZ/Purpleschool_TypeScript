@@ -1,93 +1,51 @@
 /*  
   Поведенческие паттерны - решают задачу эффективного взаимодействия между компонентами.
 
-  6. Iterator - итерироваться по коллекции, необходим, когда необходимо пройти одну и туже структуру данных разными способами
-  (например: обойти по приоритету, обойти по зависимостям)
+  7. Template Method (шаблонный метод) - 
 */
 
-class Task {
-  constructor(public prioritet: number) {}
+class Form {
+  constructor(public name: string) {}
 }
 
-class TaskList {
-  private tasks: Task[] = [];
-
-  public sortByPriority() {
-    this.tasks =this.tasks.sort((a, b) => {
-      if (a.prioritet > b.prioritet) {
-        return 1
-      } else if (a.prioritet === b.prioritet) {
-        return 0;
-      } else {
-        return -1;
-      }
-    })
+/* Шаблонный метод */
+abstract class SaveForm<T> {
+  public save(form: Form) {
+    const res = this.fill(form);
+    this.log(res);
+    this.send(res);
   }
 
-  public addTask(task: Task) {
-    this.tasks.push(task);
+  protected abstract fill(form: Form): T;
+  protected log(data: T): void {
+    console.log(data);
   }
-
-  public getTask() {
-    return this.tasks;
-  }
-
-  public countTasks() {
-    return this.tasks.length;
-  }
-
-  getIterator() {
-    return new PriorityTaskIterator(this)
-  }
+  
+  protected abstract send(data: T): void;
 }
 
-
-
-interface IIterator<T> {
-  /* текущий элемент */
-  current(): T | undefined;
-  /* следующий элемент */
-  next(): T | undefined;
-  /* предыдущий элемент */
-  prev():  T | undefined;
-  /* текущий индекс элемента */
-  index(): number;
-}
-
-class PriorityTaskIterator implements IIterator<Task>{
-  private idxElem: number = 0;
-  private taskList: TaskList;
-
-  constructor(taskList: TaskList) {
-    taskList.sortByPriority();
-    this.taskList = taskList;
+class FerstAPI extends SaveForm<string> {
+  protected fill(form: Form): string {
+    return form.name;
   }
-
-  current(): Task | undefined {
-    return this.taskList.getTask()[this.idxElem]
-  }
-  next(): Task | undefined {
-    this.idxElem += 1;
-    return this.taskList.getTask()[this.idxElem]
-  }
-  prev(): Task | undefined {
-    this.idxElem -= 1;
-    return this.taskList.getTask()[this.idxElem]
-  }
-  index(): number {
-    return this.idxElem
+  protected send(data: string): void {
+    console.log(`Отправляю ${data}`);
   }
 
 }
 
-const taskList = new TaskList();
-taskList.addTask(new Task(8));
-taskList.addTask(new Task(1));
-taskList.addTask(new Task(3));
+class SecondAPI extends SaveForm<{fio: string}> {
+  protected fill(form: Form): {fio: string} {
+    return {fio: form.name};
+  }
+  protected send(data: {fio: string}): void {
+    console.log(`Отправляю ${data}`);
+  }
 
-const iterator = taskList.getIterator();
-console.log(iterator.current());
-console.log(iterator.next());
-console.log(iterator.prev());
-console.log(iterator.index());
+}
 
+const form1 = new FerstAPI();
+form1.save(new Form('Вася'));
+
+const form2 = new SecondAPI();
+form2.save(new Form('Петя'));
